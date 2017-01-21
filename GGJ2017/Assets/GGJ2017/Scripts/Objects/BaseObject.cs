@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseObject : MonoBehaviour {
+    protected Renderer[] m_renderers;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    protected virtual void Awake()
+    {
+        m_renderers = GetComponentsInChildren<Renderer>();
+    }
+
+    public void SetColor(Color c)
+    {
+        for(int i = 0; i < m_renderers.Length; ++i)
+        {
+            m_renderers[i].material.color = c;
+        }
+    }
 }
