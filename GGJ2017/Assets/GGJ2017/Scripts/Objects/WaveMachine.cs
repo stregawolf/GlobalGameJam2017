@@ -36,8 +36,7 @@ public class WaveMachine : MonoBehaviour {
 			waveChild.transform.localScale = new Vector3(numWaves * width,1,width);
 			waveChild.transform.localPosition = new Vector3(numWaves * width * 0.5f, 0, 0);
 			waveChild.GetComponent<Rigidbody>().centerOfMass = -waveChild.transform.localPosition;
-			wavePieces[i].transform.localPosition = new Vector3(0, 0, i*width);
-			waveChild.transform.parent = this.transform;
+			wavePieces[i].transform.localPosition = new Vector3(-numWaves * 0.5f * width, 0, i*width - numWaves * 0.5f * width);
 		}
 	}
 	
@@ -46,16 +45,7 @@ public class WaveMachine : MonoBehaviour {
 		wavePosition += Time.deltaTime * -velocity;
 		for (int i = 0; i < numWaves; i++) {
 			float angle = Mathf.Sin((wavePosition + offsetPerWave * i) * frequency) * Mathf.PI * amplitude;
-			Rigidbody waveBody = wavePieces[i].GetComponent<Rigidbody>();
-			if (usePhysics) {
-				waveBody.isKinematic = false;
-				waveBody.velocity = Vector3.zero;
-				waveBody.angularVelocity = Vector3.zero;
-				waveBody.AddTorque(0, 0, angle * waveBody.mass);
-			} else {
-				waveBody.isKinematic = true;
-				wavePieces[i].transform.localRotation = Quaternion.Euler(0, 0, angle);
-			}
+			wavePieces[i].transform.localRotation = Quaternion.Euler(0, 0, angle);
 		}
 
 		if (Input.GetKey(KeyCode.LeftArrow)) {
