@@ -7,6 +7,11 @@ public class BaseObject : MonoBehaviour {
 
     protected virtual void Awake()
     {
+        DiscoverRenderers();
+    }
+
+    public void DiscoverRenderers()
+    {
         m_renderers = GetComponentsInChildren<Renderer>();
     }
 

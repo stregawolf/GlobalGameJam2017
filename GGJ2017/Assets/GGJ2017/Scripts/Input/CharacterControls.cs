@@ -34,7 +34,7 @@ public class CharacterControls : MonoBehaviour {
         Vector3 dir = Vector3.zero;
         Vector3 leftDir = Vector3.zero;
         Vector3 rightDir = Vector3.zero;
-        if (Input.GetJoystickNames().Length != 0 && XCI.IsPluggedIn((int)(controller == XboxController.All ? XboxController.First : controller)))
+        if (XCI.GetNumPluggedCtrlrs() > 0 && Input.GetJoystickNames().Length != 0 && XCI.IsPluggedIn((int)(controller == XboxController.All ? XboxController.First : controller)))
         {
             leftDir.x = XCI.GetAxis(XboxAxis.LeftStickX, controller);
             leftDir.y = XCI.GetAxis(XboxAxis.LeftStickY, controller);

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : BaseActor {
-    public int teamId;
-    public Color m_color = Color.white;
+public class Player : BaseActor
+{
+    public Game.Team m_team;
 
-    protected override void Awake()
+    public void Init(Game.Team team)
     {
-        base.Awake();
-        SetColor(m_color);
+        m_team = team;
+        DiscoverRenderers();
+        SetColor(m_team.m_color);
     }
 }
