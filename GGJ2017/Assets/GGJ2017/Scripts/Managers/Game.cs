@@ -34,6 +34,7 @@ public class Game : MonoBehaviour
 
     public bool m_roundStarted { get; protected set; }
 
+    protected Color m_environmentColor = Color.white;
     protected Team m_lastScoringTeam = null;
 
     protected void Awake()
@@ -42,6 +43,12 @@ public class Game : MonoBehaviour
         EventManager.OnBallHitGround.Register(OnBallHitGround);
 
         m_roundStarted = false;
+    }
+
+    protected void OnDestroy()
+    {
+        Instance = null;
+        EventManager.OnBallHitGround.Unregister(OnBallHitGround);
     }
 
     public void InitPlayers()
@@ -72,6 +79,21 @@ public class Game : MonoBehaviour
     {
         m_ball.Reset();
 
+        if(m_environmentColor != Color.white)
+        {
+            Color startColor = m_environmentColor;
+            LeanTween.value(0.0f, 1.0f, 1.0f)
+                .setOnUpdate((float t) =>
+                {
+                    SetEnvironmentColor(Color.Lerp(startColor, Color.white, t));
+                })
+                .setOnComplete(()=>
+                {
+                    SetEnvironmentColor(Color.white);
+                })
+                .setEase(LeanTweenType.easeInOutSine);
+        }
+
         yield return new WaitForSeconds(1.0f);
 
         m_roundStarted = true;
@@ -82,12 +104,7 @@ public class Game : MonoBehaviour
         }
         m_ball.TossBall(dir * m_ball.m_initialImpulse);
     }
-
-    protected void OnDestroy()
-    {
-        Instance = null;
-        EventManager.OnBallHitGround.Unregister(OnBallHitGround);
-    }
+    
 
     public void ResetScore()
     {
@@ -180,9 +197,10 @@ public class Game : MonoBehaviour
 
     public void SetEnvironmentColor(Color c)
     {
-        for(int i = 0; i < m_environmentPieces.Length; ++i)
+        m_environmentColor = c;
+        for (int i = 0; i < m_environmentPieces.Length; ++i)
         {
-            m_environmentPieces[i].SetColor(c);
+            m_environmentPieces[i].SetColor(m_environmentColor);
         }
     }
 
@@ -206,11 +224,10 @@ public class Game : MonoBehaviour
         m_ball.SetColor(m_lastScoringTeam.m_color);
         SetEnvironmentColor(m_lastScoringTeam.m_color);
 
-        yield return StartCoroutine(HandleTimeFlux());
+        yield return StartCoroutine(HandleTimeFlux(1.0f));
         m_ball.Hide();
         yield return new WaitForSecondsRealtime(1.0f);
-
-        SetEnvironmentColor(Color.white);
+        
         StartRound();
     }
 
