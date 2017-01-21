@@ -22,8 +22,10 @@ public class CharacterControls : MonoBehaviour {
     protected void FixedUpdate()
     {
         m_head.AddForce(Vector3.up * m_passiveForceHead);
-        m_leftArm.AddForce((Vector3.left + Vector3.up).normalized * m_passiveForceArm);
-        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
+		if(m_leftArm != null)
+	        m_leftArm.AddForce((Vector3.left + Vector3.up).normalized * m_passiveForceArm);
+		if(m_rightArm != null)
+	        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
 
         Vector3 dir = Vector3.zero;
         if (Input.GetKey(m_upkey))
