@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : BaseActor {
-    public int teamId;
+    public Game.TeamId teamId = Game.TeamId.Invalid;
     public Color m_color = Color.white;
 
     protected override void Awake()

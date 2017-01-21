@@ -8,27 +8,75 @@ public class Game : MonoBehaviour {
     public int m_scoreToWinMatch = 10;
     public int m_matchesToWinGame = 3;
 
-    public int m_team0Score = 0;
-    public int m_team1Score = 0;
-    public int m_team0MatchPoints = 0;
-    public int m_team1MatchPoints = 0;
+    public enum TeamId:int
+    {
+        Invalid = -1,
+        TeamA = 0,
+        TeamB = 1,
+        TeamC = 2,
+        TeamD = 3,
+    }
 
-    public Player m_player1;
-    public Player m_player2;
+    [System.Serializable]
+    public class Team
+    {
+        public TeamId m_id = TeamId.Invalid;
+        public int m_score = 0;
+        public int m_matchPoints = 0;
+        public Player[] m_players;
+    }
 
     public Ball m_ball;
-
+    public Team[] m_teams;
     public BaseObject[] m_environmentPieces;
+
+    protected TeamId m_lastScoringTeamId = TeamId.Invalid;
+    protected bool m_roundStarted = false;
 
     protected void Awake()
     {
         Instance = this;
         EventManager.OnBallHitGround.Register(OnBallHitGround);
+
+        InitPlayers();
+    }
+
+    public void InitPlayers()
+    {
+        for (int i = 0; i < m_teams.Length; ++i)
+        {
+            Team team = m_teams[i];
+            for(int p = 0; p < team.m_players.Length; ++p)
+            {
+                team.m_players[p].teamId = (TeamId)i;
+            }
+        }
     }
 
     protected void Start()
     {
+        StartRound();
+    }
+
+    protected void StartRound()
+    {
+        StartCoroutine(HandleStartRound());
+    }
+
+
+    protected IEnumerator HandleStartRound()
+    {
         m_ball.Reset();
+
+        yield return new WaitForSeconds(1.0f);
+
+        m_roundStarted = true;
+        Vector3 dir = m_ball.transform.right;
+        if (m_lastScoringTeamId == TeamId.TeamA)
+        {
+            dir.x *= -1;
+        }
+        m_ball.TossBall(dir * m_ball.m_initialImpulse);
     }
 
     protected void OnDestroy()
@@ -39,71 +87,99 @@ public class Game : MonoBehaviour {
 
     public void ResetScore()
     {
-        m_team0Score = 0;
-        m_team1Score = 0;
-    }
-
-    public void IncreaseTeam0Score()
-    {
-        ++m_team0Score;
-        if(m_team0Score >= m_scoreToWinMatch)
+        for(int i = 0; i < m_teams.Length; ++i)
         {
-            ResetScore();
-            ++m_team0MatchPoints;
-            if(m_team0MatchPoints > m_matchesToWinGame)
-            {
-                // player1 wins
-            }
+            m_teams[i].m_score = 0;
         }
     }
 
-    public void IncreaseTeam1Score()
+    public void IncreaseScore(TeamId id)
     {
-        ++m_team1Score;
-        if (m_team1Score >= m_scoreToWinMatch)
+        int teamIndex = (int)id;
+        if (teamIndex < 0 || teamIndex > m_teams.Length)
+        {
+            return;
+        }
+        Team team = m_teams[teamIndex];
+
+        m_lastScoringTeamId = id;
+        team.m_score++;
+        if (team.m_score >= m_scoreToWinMatch)
         {
             ResetScore();
-            ++m_team1MatchPoints;
-            if (m_team1MatchPoints > m_matchesToWinGame)
+            team.m_matchPoints++;
+            if (team.m_matchPoints > m_matchesToWinGame)
             {
-                // player2 wins
+                // Team wins
             }
         }
     }
 
     public void OnBallHitGround()
     {
+        if(!m_roundStarted)
+        {
+            return;
+        }
+
         if(m_ball.m_lastPlayer != null)
         {
             // determine winner
             if (m_ball.transform.position.x < 0)
             {
-                // ball last hit by team 0 or ball last hit by team 1 and ball's pointTeam is team 1
-                if (m_ball.m_lastPlayer.teamId == 0 || (m_ball.m_lastPlayer.teamId == 1 && m_ball.pointTeamId == 1))
+                if(m_ball.m_lastPlayer.teamId == TeamId.TeamA)
                 {
-                    IncreaseTeam1Score();
+                    // ball landed on A's side and last touched by A
+                    IncreaseScore(TeamId.TeamB);
                 }
-                else if (m_ball.m_lastPlayer.teamId == 1 && (m_ball.pointTeamId == 0 || m_ball.pointTeamId == -1))
+                else if(m_ball.m_lastPlayer.teamId == TeamId.TeamB)
                 {
-                    IncreaseTeam0Score();
+                    if(m_ball.m_pointTeamId == TeamId.TeamB)
+                    {
+                        // team B hit ball over net
+                        IncreaseScore(TeamId.TeamB);
+                    }
+                    else
+                    {
+                        // team B hit ball, but not over the net
+                        IncreaseScore(TeamId.TeamA);
+                    }
                 }
             }
             else
             {
-                // ball last hit by team 0 or ball last hit by team 1 and ball's pointTeam is team 1
-                if (m_ball.m_lastPlayer.teamId == 1 || (m_ball.m_lastPlayer.teamId == 0 && m_ball.pointTeamId == 0))
+                if (m_ball.m_lastPlayer.teamId == TeamId.TeamB)
                 {
-                    IncreaseTeam0Score();
+                    // ball landed on B's side and last touched by B
+                    IncreaseScore(TeamId.TeamA);
                 }
-                else if (m_ball.m_lastPlayer.teamId == 0 && (m_ball.pointTeamId == 1 || m_ball.pointTeamId == -1))
+                else if (m_ball.m_lastPlayer.teamId == TeamId.TeamA)
                 {
-                    IncreaseTeam1Score();
+                    if (m_ball.m_pointTeamId == TeamId.TeamA)
+                    {
+                        // team B hit ball over net
+                        IncreaseScore(TeamId.TeamA);
+                    }
+                    else
+                    {
+                        // team B hit ball, but not over the net
+                        IncreaseScore(TeamId.TeamB);
+                    }
                 }
             }
         }
 
         EventManager.OnScoreChange.Dispatch();
-
-        m_ball.Reset();
+        m_roundStarted = false;
+        StartCoroutine(HandleScoringFeedback());
     }
+
+    protected IEnumerator HandleScoringFeedback()
+    {
+
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        StartRound();
+    }
+
 }
