@@ -32,7 +32,7 @@ public class CharacterControls : MonoBehaviour {
 	        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
 
         Vector3 dir = Vector3.zero;
-        if (XCI.IsPluggedIn((int)controller))
+        if (XCI.GetNumPluggedCtrlrs() > 0 && XCI.IsPluggedIn((int)controller))
         {
             dir.x = XCI.GetAxis(XboxAxis.LeftStickX, controller);
             dir.y = XCI.GetAxis(XboxAxis.LeftStickY, controller);
