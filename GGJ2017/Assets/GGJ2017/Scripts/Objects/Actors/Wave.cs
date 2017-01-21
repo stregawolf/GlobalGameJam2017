@@ -16,20 +16,24 @@ public class Wave : MonoBehaviour
     public float spring = 0.3f;
     public float waveStrength = 20.0f;
 
+
+    public int width = 200;
+    public int height = 25;
+
     private Mesh mesh;
+    private float[,,] buffer;
+    private float[,] velocityBuffer;
+    private Vector3[] vertices;
 
-    const int width = 100;
-    const int height = 100;
-
-    private float[,,] buffer = new float[width,height,2];
-    private float[,] velocityBuffer = new float[width, height];
     private int currentBuffer = 0;
-
-    private Vector3 [] vertices = new Vector3[width * height];
 
     // Use this for initialization
     void Start ()
     {
+        buffer = new float[width, height, 2];
+        velocityBuffer = new float[width, height];
+        vertices = new Vector3[width * height];
+
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
                 for (int k = 0; k < 2; k++)
@@ -84,8 +88,8 @@ public class Wave : MonoBehaviour
 
         Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + 50, 0, 100));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + 50, 0, 100));
+        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width - 1));
+        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height - 1));
 
         velocityBuffer[i, j] = collision.impulse.y * waveStrength;
     }
@@ -96,8 +100,8 @@ public class Wave : MonoBehaviour
 
         Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + 50, 0, 100));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + 50, 0, 100));
+        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width - 1));
+        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height - 1));
 
         collision.rigidbody.AddForce(contact.normal * velocityBuffer[i, j] * waveStrength);
     }
