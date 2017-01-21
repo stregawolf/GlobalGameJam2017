@@ -12,10 +12,11 @@ public static class Vector3Extension
 
 public class Wave : MonoBehaviour
 {
-    public Material material;
     public float damping = 0.99f;
     public float spring = 0.3f;
     public float waveStrength = 20.0f;
+
+    private Mesh mesh;
 
     const int width = 100;
     const int height = 100;
@@ -24,8 +25,10 @@ public class Wave : MonoBehaviour
     private float[,] velocityBuffer = new float[width, height];
     private int currentBuffer = 0;
 
-	// Use this for initialization
-	void Start ()
+    private Vector3 [] vertices = new Vector3[width * height];
+
+    // Use this for initialization
+    void Start ()
     {
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
@@ -33,6 +36,46 @@ public class Wave : MonoBehaviour
                 {
                     buffer[i, j, k] = 0.0f;
                 }
+
+        mesh = new Mesh();
+
+        var mf = GetComponent<MeshFilter>();
+        mf.mesh = mesh;
+
+        var uv = new Vector2[width * height];
+
+        for(int i=0;i<width;i++)
+            for (int j = 0; j < height; j++)
+            {
+                vertices[j * width + i] = new Vector3(i - width/2, 0.0f, j - height/2);
+                uv[j * width + i] = new Vector2((float)i / (float)width, (float)j / (float)height);
+            }
+
+        mesh.vertices = vertices;
+        mesh.uv = uv;
+
+        var triangles = new int[6 * width * height];
+
+        int offset = 0;
+
+        for (int i = 0; i < width - 1; i++)
+            for (int j = 0; j < height - 1; j++)
+            {
+                triangles[offset] = i + j * width;
+                triangles[offset + 2] = i + 1 + j * width;
+                triangles[offset + 1] = i + j * width + width;
+
+                triangles[offset + 3] = i + 1 + j * width;
+                triangles[offset + 4] = i + j * width + width;
+                triangles[offset + 5] = i + 1 + j * width + width;
+
+                offset += 6;
+            }
+
+        mesh.triangles = triangles;
+        mesh.MarkDynamic();
+        mesh.RecalculateNormals();
+        mesh.UploadMeshData(false);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -75,30 +118,15 @@ public class Wave : MonoBehaviour
                 velocityBuffer[i,j] *= damping;
                 buffer[i, j, nextBuffer] = buffer[i, j, currentBuffer] + velocityBuffer[i,j] * Time.deltaTime; 
             }
-        currentBuffer = nextBuffer;	
-	}
-
-    void OnRenderObject()
-    {
-        material.SetPass(0);
-
-        GL.PushMatrix();
-        GL.MultMatrix(transform.localToWorldMatrix);
-        GL.Begin(GL.QUADS);
-
-        for(int i=0;i<99;i++)
-            for (int j = 0; j < 99; j++)
+        currentBuffer = nextBuffer;
+        
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
             {
-                GL.Color(new Color(0.25f, 0.25f, 0.5f + buffer[i, j, currentBuffer] / waveStrength));
-                GL.Vertex3(i-width/2, buffer[i, j, currentBuffer], j - height / 2);
-                GL.Color(new Color(0.25f, 0.25f, 0.5f + buffer[i, j+1, currentBuffer] / waveStrength));
-                GL.Vertex3(i - width / 2, buffer[i, j + 1, currentBuffer], j - height / 2 + 1);
-                GL.Color(new Color(0.25f, 0.25f, 0.5f + buffer[i+1, j+1, currentBuffer] / waveStrength));
-                GL.Vertex3(i - width / 2 + 1, buffer[i + 1, j + 1, currentBuffer], j - height / 2 + 1);
-                GL.Color(new Color(0.25f, 0.25f, 0.5f+buffer[i+1, j, currentBuffer] / waveStrength));
-                GL.Vertex3(i - width / 2 + 1, buffer[i + 1, j, currentBuffer], j- height/2);
+                vertices[j * width + i] = new Vector3(i - width/2, buffer[i,j,currentBuffer], j - height/2);
             }
-        GL.End();
-        GL.PopMatrix();
+
+        mesh.vertices = vertices;
+        mesh.RecalculateNormals();
     }
 }
