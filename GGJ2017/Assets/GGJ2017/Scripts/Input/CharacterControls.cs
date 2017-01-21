@@ -47,7 +47,9 @@ public class CharacterControls : MonoBehaviour {
 
         dir.Normalize();
         m_forcePoint.AddForce(dir * m_force);
-        m_leftArm.AddForce(dir * m_armForce);
-        m_rightArm.AddForce(dir * m_armForce);
+		if(m_leftArm != null)
+	        m_leftArm.AddForce(dir * m_armForce);
+		if(m_rightArm != null)
+	        m_rightArm.AddForce(dir * m_armForce);
     }
 }

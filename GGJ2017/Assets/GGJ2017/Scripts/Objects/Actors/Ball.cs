@@ -16,12 +16,15 @@ public class Ball : BaseObject {
 
     public Game.TeamId m_pointTeamId = Game.TeamId.Invalid;
     public Player m_lastPlayer { get; protected set; }
+
+    private TrailRenderer m_trailRenderer;
     
 	protected override void Awake ()
     {
         base.Awake();
         m_originalPosition = transform.position;
         m_originalRotation = transform.rotation;
+        m_trailRenderer = GetComponent<TrailRenderer>();
     } 
 
     public void Reset()
@@ -34,11 +37,13 @@ public class Ball : BaseObject {
         transform.position = m_originalPosition;
         transform.rotation = m_originalRotation;
 
+        m_trailRenderer.Clear();
         SetColor(Color.white);
         m_lastPlayer = null;
 
         transform.localScale = Vector3.zero;
         LeanTween.scale(gameObject, Vector3.one, 0.5f).setEase(LeanTweenType.easeSpring);
+
     }
 
     public void TossBall(Vector3 force)

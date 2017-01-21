@@ -50,6 +50,7 @@ public class PlayerBuilder : MonoBehaviour {
 				SpringJoint spring = lastSegment.AddComponent<SpringJoint>();
 				CopySpring(spring, springSettings);
 				spring.connectedBody = rb;
+				Physics.IgnoreCollision(lastSegment.GetComponentInChildren<Collider>(), currentSegment.GetComponentInChildren<Collider>());
 			} else {
 				controls.m_forcePoint = controls.m_head = currentSegment.GetComponent<Rigidbody>();
 			}
@@ -60,7 +61,7 @@ public class PlayerBuilder : MonoBehaviour {
 			lastSegment = currentSegment;
 		}
 
-		if (armLink == null)
+		if (armLink == null || armSegments == 0)
 			return;
 
 		// Build right arm
@@ -69,7 +70,7 @@ public class PlayerBuilder : MonoBehaviour {
 		rightArmChain.transform.parent = armLink.transform;
 		rightArmChain.transform.localPosition = Vector3.zero;
 		rightArmChain.transform.localRotation = Quaternion.Euler(0, 0, -90);
-		rightArmChain.transform.localPosition= armLink.transform.right / bodySegmentScale.x;
+		rightArmChain.transform.localPosition= armLink.transform.right / bodySegmentScale.x * 0.5f;
 		rightArmChain.transform.parent = transform;
 		rightArmChain.transform.localScale = Vector3.one;
 		for (int i = armSegments - 1; i >= 0; i--) {
@@ -85,12 +86,14 @@ public class PlayerBuilder : MonoBehaviour {
 				SpringJoint spring = lastSegment.AddComponent<SpringJoint>();
 				CopySpring(spring, springSettings);
 				spring.connectedBody = rb;
+				Physics.IgnoreCollision(lastSegment.GetComponentInChildren<Collider>(), currentSegment.GetComponentInChildren<Collider>());
 			} else {
 				controls.m_rightArm = currentSegment.GetComponent<Rigidbody>();
 			}
 			if (i==0) {
 				SpringJoint spring = currentSegment.AddComponent<SpringJoint>();
 				spring.connectedBody = armLink.GetComponent<Rigidbody>();
+				Physics.IgnoreCollision(armLink.GetComponentInChildren<Collider>(), currentSegment.GetComponentInChildren<Collider>());
 				CopySpring(spring, springSettings);
 			}
 			lastSegment = currentSegment;
@@ -102,7 +105,7 @@ public class PlayerBuilder : MonoBehaviour {
 		leftArmChain.transform.parent = armLink.transform;
 		leftArmChain.transform.localPosition = Vector3.zero;
 		leftArmChain.transform.localRotation = Quaternion.Euler(0, 0, 90);
-		leftArmChain.transform.localPosition= -armLink.transform.right / bodySegmentScale.x;
+		leftArmChain.transform.localPosition= -armLink.transform.right / bodySegmentScale.x * 0.5f;
 		leftArmChain.transform.parent = transform;
 		leftArmChain.transform.localScale = Vector3.one;
 		for (int i = armSegments - 1; i >= 0; i--) {
@@ -118,6 +121,7 @@ public class PlayerBuilder : MonoBehaviour {
 				SpringJoint spring = lastSegment.AddComponent<SpringJoint>();
 				CopySpring(spring, springSettings);
 				spring.connectedBody = rb;
+				Physics.IgnoreCollision(lastSegment.GetComponentInChildren<Collider>(), currentSegment.GetComponentInChildren<Collider>());
 			} else {
 				controls.m_leftArm = currentSegment.GetComponent<Rigidbody>();
 			}
@@ -125,6 +129,7 @@ public class PlayerBuilder : MonoBehaviour {
 			if (i==0) {
 				SpringJoint spring = currentSegment.AddComponent<SpringJoint>();
 				spring.connectedBody = armLink.GetComponent<Rigidbody>();
+				Physics.IgnoreCollision(armLink.GetComponentInChildren<Collider>(), currentSegment.GetComponentInChildren<Collider>());
 				CopySpring(spring, springSettings);
 			}
 			lastSegment = currentSegment;
