@@ -7,6 +7,7 @@ public class Ball : BaseObject
 
     public float m_initialImpulse = 10.0f;
     public float m_contactImpulse = 1.0f;
+    public float ballScale = 1f;
 
     public GameObject m_ground;
 
@@ -48,12 +49,12 @@ public class Ball : BaseObject
     public void Show()
     {
         transform.localScale = Vector3.zero;
-        LeanTween.scale(gameObject, Vector3.one, 0.5f).setEase(LeanTweenType.easeSpring);
+        LeanTween.scale(gameObject, Vector3.one * ballScale, 0.5f).setEase(LeanTweenType.easeSpring);
     }
 
     public void Hide(float delay = 0.0f)
     {
-        transform.localScale = Vector3.one;
+        transform.localScale = Vector3.one * ballScale;
         LeanTween.scale(gameObject, Vector3.zero, 1.0f).setDelay(delay).setEase(LeanTweenType.easeSpring);
     }
 
