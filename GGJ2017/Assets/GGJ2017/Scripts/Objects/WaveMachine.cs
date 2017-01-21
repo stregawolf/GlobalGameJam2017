@@ -36,8 +36,10 @@ public class WaveMachine : MonoBehaviour {
 		for (int i = 0; i < numWaves; i++) {
 			wavePieces[i] = GameObject.Instantiate(wavePiece);
 			wavePieces[i].transform.parent = this.transform;
+			wavePieces[i].transform.localScale = Vector3.one;
+			wavePieces[i].transform.rotation = Quaternion.identity;
 			GameObject waveChild = wavePieces[i].transform.GetChild(0).gameObject;
-			waveChild.transform.localScale = new Vector3(numWaves * width ,1,width);
+			waveChild.transform.localScale = new Vector3(numWaves * width * transform.localScale.x, 1 * transform.localScale.y, width * transform.localScale.z);
 			float offset = (1.0f - anchorPos * 2.0f) * numWaves * width * 0.5f;
 			waveChild.transform.localPosition = new Vector3(offset, 0, 0);
 			waveChild.GetComponent<Rigidbody>().centerOfMass = -waveChild.transform.localPosition;
