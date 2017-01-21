@@ -28,15 +28,15 @@ public class CharacterControls : MonoBehaviour {
             renderers[i].material.color = m_playerColor;
         }
     }
-    
-    protected void Update()
+
+    protected void FixedUpdate()
     {
         m_head.AddForce(Vector3.up * m_passiveForceHead);
         m_leftArm.AddForce((Vector3.left + Vector3.up).normalized * m_passiveForceArm);
-        m_rightArm.AddForce((Vector3.right+Vector3.up).normalized * m_passiveForceArm);
+        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
 
         Vector3 dir = Vector3.zero;
-        if(Input.GetKey(m_upkey))
+        if (Input.GetKey(m_upkey))
         {
             dir += Vector3.up;
         }
@@ -48,7 +48,7 @@ public class CharacterControls : MonoBehaviour {
         {
             dir += Vector3.right;
         }
-        if(Input.GetKey(m_downKey))
+        if (Input.GetKey(m_downKey))
         {
             dir += Vector3.down;
         }

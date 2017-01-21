@@ -12,6 +12,8 @@ public class Ball : MonoBehaviour {
     protected Vector3 m_originalPosition;
     protected Quaternion m_originalRotation;
 
+    protected Player m_lastPlayer;
+
 	// Use this for initialization
 	void Start () {
 
@@ -37,9 +39,18 @@ public class Ball : MonoBehaviour {
         m_rigidbody.AddForce(transform.forward * m_initialImpulse, ForceMode.Impulse);
     }
 
+    public void SetPlayer(Player player)
+    {
+        if (player != null)
+        {
+            m_lastPlayer = player;
+        }
+    }
     
     public void OnCollisionExit(Collision c)
     {
+        SetPlayer(c.collider.GetComponentInParent<Player>());
+        
         if(c.collider.gameObject.layer == LayerMask.NameToLayer("Character"))
         {
             m_rigidbody.AddForce(Vector3.up * m_contactImpulse, ForceMode.Impulse);
