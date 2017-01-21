@@ -8,16 +8,8 @@ public class BallPointTeamTriggerZone : MonoBehaviour {
         Ball ball = c.GetComponent<Ball>();
         if(ball != null && ball.m_lastPlayer != null)
         {
-            if (ball.transform.position.x < 0)
-            {
-                // ball crossed over from right to left
-                ball.m_pointTeamId = Game.TeamId.TeamB;
-            }
-            else
-            {
-                // ball crossed over from left to right
-                ball.m_pointTeamId = Game.TeamId.TeamA;
-            }
+            ball.pointTeamId = (ball.transform.position.x > 0)? 0:1;
+            Debug.Log(ball.pointTeamId);
         }
     }
 }

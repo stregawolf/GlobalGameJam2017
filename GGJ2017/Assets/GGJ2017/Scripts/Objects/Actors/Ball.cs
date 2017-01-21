@@ -14,7 +14,7 @@ public class Ball : BaseObject {
     protected Vector3 m_originalPosition;
     protected Quaternion m_originalRotation;
 
-    public Game.TeamId m_pointTeamId = Game.TeamId.Invalid;
+    public int pointTeamId = -1;
     public Player m_lastPlayer { get; protected set; }
 
     private TrailRenderer m_trailRenderer;
@@ -29,26 +29,19 @@ public class Ball : BaseObject {
 
     public void Reset()
     {
-        m_rigidbody.isKinematic = true;
-        m_rigidbody.velocity = Vector3.zero;
-        m_rigidbody.angularVelocity = Vector3.zero;
-
-        m_pointTeamId = Game.TeamId.Invalid;
-        transform.position = m_originalPosition;
-        transform.rotation = m_originalRotation;
-
-        m_trailRenderer.Clear();
         SetColor(Color.white);
         m_lastPlayer = null;
-
-        transform.localScale = Vector3.zero;
-        LeanTween.scale(gameObject, Vector3.one, 0.5f).setEase(LeanTweenType.easeSpring);
-
+        pointTeamId = -1;
+        transform.position = m_originalPosition;
+        transform.rotation = m_originalRotation;
+        m_rigidbody.velocity = Vector3.zero;
+        m_rigidbody.angularVelocity = Vector3.zero;
+        TossBall(transform.forward * m_initialImpulse);
+        m_trailRenderer.Clear();
     }
 
     public void TossBall(Vector3 force)
     {
-        m_rigidbody.isKinematic = false;
         m_rigidbody.AddForce(force, ForceMode.Impulse);
     }
 
@@ -57,7 +50,6 @@ public class Ball : BaseObject {
         if (player != null)
         {
             m_lastPlayer = player;
-            m_pointTeamId = Game.TeamId.Invalid;
             SetColor(m_lastPlayer.m_color);
 
             m_rigidbody.AddForce(Vector3.up * m_contactImpulse, ForceMode.Impulse);

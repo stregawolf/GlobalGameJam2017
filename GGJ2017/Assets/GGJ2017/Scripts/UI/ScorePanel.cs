@@ -25,7 +25,7 @@ public class ScorePanel : MonoBehaviour {
 
     public void UpdateScore()
     {
-        m_scoreText.text = string.Format("{0}:{1}", Game.Instance.m_teams[0].m_score, Game.Instance.m_teams[1].m_score);
-        m_matchText.text = string.Format("{0}:{1}", Game.Instance.m_teams[0].m_matchPoints, Game.Instance.m_teams[1].m_matchPoints);
+        m_scoreText.text = string.Format("{0}:{1}", Game.Instance.m_team0Score, Game.Instance.m_team1Score);
+        m_matchText.text = string.Format("{0}:{1}", Game.Instance.m_team0MatchPoints, Game.Instance.m_team1MatchPoints);
     }
 }
