@@ -16,12 +16,15 @@ public class Ball : BaseObject {
 
     public int pointTeamId = -1;
     public Player m_lastPlayer { get; protected set; }
+
+    private TrailRenderer m_trailRenderer;
     
 	protected override void Awake ()
     {
         base.Awake();
         m_originalPosition = transform.position;
         m_originalRotation = transform.rotation;
+        m_trailRenderer = GetComponent<TrailRenderer>();
     } 
 
     public void Reset()
@@ -34,6 +37,7 @@ public class Ball : BaseObject {
         m_rigidbody.velocity = Vector3.zero;
         m_rigidbody.angularVelocity = Vector3.zero;
         TossBall(transform.forward * m_initialImpulse);
+        m_trailRenderer.Clear();
     }
 
     public void TossBall(Vector3 force)
