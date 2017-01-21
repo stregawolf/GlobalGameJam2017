@@ -88,8 +88,8 @@ public class Wave : MonoBehaviour
 
         Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height));
+        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width - 1));
+        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height - 1));
 
         velocityBuffer[i, j] = collision.impulse.y * waveStrength;
     }
@@ -100,8 +100,8 @@ public class Wave : MonoBehaviour
 
         Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height));
+        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width - 1));
+        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height - 1));
 
         collision.rigidbody.AddForce(contact.normal * velocityBuffer[i, j] * waveStrength);
     }
