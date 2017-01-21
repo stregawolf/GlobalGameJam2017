@@ -12,6 +12,7 @@ public class WaveMachine : MonoBehaviour {
 	public float amplitude = 0.25f;
 	public float offsetPerWave = 3;
 	public float width = 1f;
+	public float gap = 0f;
 	public float wavePosition = 0f;
 
 	public float velocityControlSpeed = 3.0f;
@@ -32,6 +33,7 @@ public class WaveMachine : MonoBehaviour {
 
 	void SpawnWaves()
 	{
+		float sumWidth = width + gap;
 		wavePieces = new GameObject[numWaves];
 		for (int i = 0; i < numWaves; i++) {
 			wavePieces[i] = GameObject.Instantiate(wavePiece);
@@ -39,11 +41,11 @@ public class WaveMachine : MonoBehaviour {
 			wavePieces[i].transform.localScale = Vector3.one;
 			wavePieces[i].transform.rotation = Quaternion.identity;
 			GameObject waveChild = wavePieces[i].transform.GetChild(0).gameObject;
-			waveChild.transform.localScale = new Vector3(numWaves * width * transform.localScale.x, 1 * transform.localScale.y, width * transform.localScale.z);
-			float offset = (1.0f - anchorPos * 2.0f) * numWaves * width * 0.5f;
+			waveChild.transform.localScale = new Vector3(numWaves * sumWidth * transform.localScale.x, 1 * transform.localScale.y, width * transform.localScale.z);
+			float offset = (1.0f - anchorPos * 2.0f) * numWaves * sumWidth * 0.5f;
 			waveChild.transform.localPosition = new Vector3(offset, 0, 0);
 			waveChild.GetComponent<Rigidbody>().centerOfMass = -waveChild.transform.localPosition;
-			wavePieces[i].transform.localPosition = new Vector3(-offset, 0, i*width - numWaves * width * 0.5f);
+			wavePieces[i].transform.localPosition = new Vector3(-offset, 0, i*sumWidth - numWaves * sumWidth * 0.5f);
 		}
 	}
 	
