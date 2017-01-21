@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public static class Vector3Extension
+{
+    public static Vector3 InvertVector(this Vector3 vector)
+    {
+        return new Vector3(1.0f / vector.x, 1.0f / vector.y, 1.0f / vector.z);
+    }
+};
+
 public class Wave : MonoBehaviour
 {
     public Material material;
@@ -31,20 +39,22 @@ public class Wave : MonoBehaviour
     {
         var contact = collision.contacts[0];
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contact.point.x + 50, 0, 100));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contact.point.z + 50, 0, 100));
+        Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
+
+        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + 50, 0, 100));
+        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + 50, 0, 100));
 
         velocityBuffer[i, j] = collision.impulse.y * waveStrength;
-
-        //collision.rigidbody.AddForce(contact.normal *  * 100.0f);
     }
 
     void OnCollisionStay(Collision collision)
     {
         var contact = collision.contacts[0];
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contact.point.x + 50,0,100));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contact.point.z + 50,0,100));
+        Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
+
+        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + 50, 0, 100));
+        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + 50, 0, 100));
 
         collision.rigidbody.AddForce(contact.normal * velocityBuffer[i, j] * waveStrength);
     }
