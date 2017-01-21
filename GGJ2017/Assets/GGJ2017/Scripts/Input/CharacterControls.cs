@@ -32,10 +32,18 @@ public class CharacterControls : MonoBehaviour {
 	        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
 
         Vector3 dir = Vector3.zero;
-        if (XCI.IsPluggedIn((int)controller))
+        Vector3 leftDir = Vector3.zero;
+        Vector3 rightDir = Vector3.zero;
+        if (Input.GetJoystickNames().Length != 0 && XCI.IsPluggedIn((int)(controller == XboxController.All ? XboxController.First : controller)))
         {
-            dir.x = XCI.GetAxis(XboxAxis.LeftStickX, controller);
-            dir.y = XCI.GetAxis(XboxAxis.LeftStickY, controller);
+            leftDir.x = XCI.GetAxis(XboxAxis.LeftStickX, controller);
+            leftDir.y = XCI.GetAxis(XboxAxis.LeftStickY, controller);
+            rightDir.x = XCI.GetAxis(XboxAxis.RightStickX, controller);
+            rightDir.y = XCI.GetAxis(XboxAxis.RightStickY, controller);
+
+            leftDir.Normalize();
+            rightDir.Normalize();
+            dir = (leftDir + rightDir).normalized;
         }
         else // Fallback to KB
         {
@@ -55,13 +63,15 @@ public class CharacterControls : MonoBehaviour {
             {
                 dir += Vector3.down;
             }
+
+            dir.Normalize();
+            leftDir = rightDir = dir;
         }
 
-        dir.Normalize();
         m_forcePoint.AddForce(dir * m_force);
 		if(m_leftArm != null)
-	        m_leftArm.AddForce(dir * m_armForce);
+	        m_leftArm.AddForce(leftDir * m_armForce);
 		if(m_rightArm != null)
-	        m_rightArm.AddForce(dir * m_armForce);
+	        m_rightArm.AddForce(rightDir * m_armForce);
     }
 }
