@@ -1,8 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using XboxCtrlrInput;
 
 public class CharacterControls : MonoBehaviour {
+
+    public XboxController controller;
+
     public Rigidbody m_head;
     public Rigidbody m_leftArm;
     public Rigidbody m_rightArm;
@@ -28,21 +32,29 @@ public class CharacterControls : MonoBehaviour {
 	        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
 
         Vector3 dir = Vector3.zero;
-        if (Input.GetKey(m_upkey))
+        if (XCI.IsPluggedIn((int)controller))
         {
-            dir += Vector3.up;
+            dir.x = XCI.GetAxis(XboxAxis.LeftStickX, controller);
+            dir.y = XCI.GetAxis(XboxAxis.LeftStickY, controller);
         }
-        if (Input.GetKey(m_leftKey))
+        else // Fallback to KB
         {
-            dir += Vector3.left;
-        }
-        if (Input.GetKey(m_rightKey))
-        {
-            dir += Vector3.right;
-        }
-        if (Input.GetKey(m_downKey))
-        {
-            dir += Vector3.down;
+            if (Input.GetKey(m_upkey))
+            {
+                dir += Vector3.up;
+            }
+            if (Input.GetKey(m_leftKey))
+            {
+                dir += Vector3.left;
+            }
+            if (Input.GetKey(m_rightKey))
+            {
+                dir += Vector3.right;
+            }
+            if (Input.GetKey(m_downKey))
+            {
+                dir += Vector3.down;
+            }
         }
 
         dir.Normalize();
