@@ -26,33 +26,46 @@ public class UIManager : MonoBehaviour {
     protected IEnumerator HandleCountDown(int startNumber, float totalDuration)
     {
         float timeStep = totalDuration / (startNumber + 1);
-        while(startNumber > 0)
+        while (startNumber > 0)
         {
-            DisplayCenterText(startNumber.ToString(), timeStep*0.5f, timeStep*0.25f, Vector3.one);
+            DisplayCenterText(startNumber.ToString(), timeStep * 0.5f, timeStep * 0.25f, Vector3.one);
             startNumber--;
             yield return new WaitForSecondsRealtime(timeStep);
         }
 
-        DisplayCenterText("Start!", timeStep * 0.5f, timeStep * 0.25f, Vector3.one*1.25f);
+        DisplayCenterText("Start!", timeStep * 0.5f, timeStep * 0.25f, Vector3.one * 1.25f);
     }
 
     public void DisplayCenterText(string text, float displayTime, float transitionTime, Vector3 toScale)
     {
-        LeanTween.cancel(m_centerText.gameObject);
-        m_centerText.gameObject.SetActive(true);
         m_centerText.text = text;
+        DoSpinTransitionIn(m_centerText.gameObject, displayTime, transitionTime, toScale);
+    }
 
-        m_centerText.transform.localScale = Vector3.zero;
-        LeanTween.rotateZ(m_centerText.gameObject, 360 * 2, transitionTime*0.9f);
-        LeanTween.scale(m_centerText.gameObject, toScale, transitionTime).setEase(LeanTweenType.easeSpring).setIgnoreTimeScale(true)
-            .setOnComplete(()=>
+    public void DoSpinTransitionIn(GameObject obj, float displayTime, float transitionTime, Vector3 toScale, float spinMultiplier = 2, bool autoHide = true)
+    {
+        LeanTween.cancel(obj);
+        obj.SetActive(true);
+
+        obj.transform.localScale = Vector3.zero;
+        obj.transform.rotation = Quaternion.identity;
+        LeanTween.rotateZ(obj, 360 * spinMultiplier, transitionTime * 0.9f);
+        LeanTween.scale(obj, toScale, transitionTime).setEase(LeanTweenType.easeSpring).setIgnoreTimeScale(true)
+            .setOnComplete(() =>
             {
-                LeanTween.rotateZ(m_centerText.gameObject, 360 * 2, transitionTime).setDelay(displayTime);
-                LeanTween.scale(m_centerText.gameObject, Vector3.zero, transitionTime).setDelay(displayTime).setEase(LeanTweenType.easeSpring).setOnComplete(()=>
+                if (autoHide)
                 {
-                    m_centerText.gameObject.SetActive(false);
-                });
+                    DoSpinTransitionOut(obj, transitionTime, spinMultiplier, displayTime);
+                }
             });
+    }
 
+    public void DoSpinTransitionOut(GameObject obj, float transitionTime, float spinMultiplier = 2, float delay = 0.0f)
+    {
+        LeanTween.rotateZ(obj, 360 * spinMultiplier, transitionTime).setDelay(delay);
+        LeanTween.scale(obj, Vector3.zero, transitionTime).setDelay(delay).setEase(LeanTweenType.easeSpring).setOnComplete(() =>
+        {
+            obj.SetActive(false);
+        });
     }
 }
