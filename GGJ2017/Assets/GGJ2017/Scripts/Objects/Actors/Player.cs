@@ -15,6 +15,8 @@ public class Player : BaseActor
     public CharacterControls m_controls;
     public PlayerBuilder m_builder;
 
+	private AudioSource audio;
+
     public enum Expression
     {
         Default,
@@ -29,6 +31,8 @@ public class Player : BaseActor
     protected override void Awake()
     {
         base.Awake();
+
+		audio = gameObject.AddComponent<AudioSource>();
 
         if(m_controls == null)
         {
@@ -83,17 +87,21 @@ public class Player : BaseActor
             case Expression.Default:
                 ShowDefaultExpression();
                 return;
-            case Expression.Excited:
-                m_head.m_face.sprite = m_data.m_faceExcited;
+			case Expression.Excited:
+				m_head.m_face.sprite = m_data.m_faceExcited;
+				MaybePlaySound(m_data.m_excitedClips);
                 break;
             case Expression.Angry:
                 m_head.m_face.sprite = m_data.m_faceAngry;
+				MaybePlaySound(m_data.m_angryClips);
                 break;
             case Expression.Sad:
                 m_head.m_face.sprite = m_data.m_faceSad;
+				MaybePlaySound(m_data.m_sadClips);
                 break;
             case Expression.Shocked:
                 m_head.m_face.sprite = m_data.m_faceShocked;
+				MaybePlaySound(m_data.m_shockedClips);
                 break;
         }
 
@@ -103,4 +111,14 @@ public class Player : BaseActor
             LeanTween.delayedCall(gameObject, duration, ShowDefaultExpression);
         }
     }
+
+	public void MaybePlaySound(AudioClip[] clips)
+	{
+		if (Random.value > 0.7f && !audio.isPlaying) {
+			if (clips.Length != 0) {
+				AudioClip clip = clips[Random.Range(0, clips.Length)];
+				audio.PlayOneShot(clip);
+			}
+		}
+	}
 }
