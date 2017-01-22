@@ -12,6 +12,9 @@ public class PlayerBuilder : MonoBehaviour {
 	public GameObject bodySegment;
 	public GameObject baseSegment;
 	public GameObject armSegment;
+    public GameObject headSegment;
+
+    public bool m_lookRight = false;
 
 	public Vector3 bodySegmentScale = Vector3.one;
 	public Vector3 armSegmentScale = Vector3.one;
@@ -26,10 +29,17 @@ public class PlayerBuilder : MonoBehaviour {
 	void Awake()
 	{
 		controls = gameObject.GetComponent<CharacterControls>();
-		BuildPlayer();
 	}
 
-	void BuildPlayer()
+    public void InitFromData(CharacterData data)
+    {
+        bodySegments = data.bodySegments;
+        armSegments = data.armSegments;
+        bodyCurve = data.m_bodyCurve;
+        armCurve = data.m_armCurve;
+    }
+
+	public void BuildPlayer()
 	{
 		GameObject armLink = null;
 		GameObject lastSegment = null;
@@ -40,7 +50,22 @@ public class PlayerBuilder : MonoBehaviour {
 		bodyChain.transform.localRotation = Quaternion.identity;
 		bodyChain.transform.localScale = Vector3.one;
 		for (int i = bodySegments - 1; i >= 0; i--) {
-			GameObject currentSegment = Instantiate(i == 0 ? baseSegment : bodySegment);
+            GameObject currentSegment = null;
+            if (i == 0)
+            {
+                currentSegment = Instantiate(baseSegment);
+            }
+            else if(i == bodySegments-1)
+            {
+                currentSegment = Instantiate(headSegment);
+                Head head = currentSegment.GetComponent<Head>();
+                head.m_face.flipX = m_lookRight;
+            }
+            else
+            {
+                currentSegment = Instantiate(bodySegment);
+            }
+
 			currentSegment.name = "Body Segment(" + i + ")";
 			currentSegment.transform.parent = bodyChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
