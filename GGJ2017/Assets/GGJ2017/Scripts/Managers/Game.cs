@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -43,6 +44,8 @@ public class Game : MonoBehaviour
         EventManager.OnBallHitGround.Register(OnBallHitGround);
 
         m_roundStarted = false;
+
+        SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
     }
 
     protected void OnDestroy()
