@@ -35,6 +35,7 @@ public class Ball : BaseObject
 
 	public AudioClip[] hits;
 	public AudioClip[] boings;
+	public AudioClip groundHit;
 
     protected override void Awake()
     {
@@ -159,13 +160,18 @@ public class Ball : BaseObject
 				clip = boings[Random.Range(0, boings.Length)];
 				velGate = 5.0f;
 				break;
+			case "Ground":
+				clip = groundHit;
+				velGate = 10.0f;
+				break;
 			default:
 				clip = hits[Random.Range(0, hits.Length)];
 				velGate = 10.0f;
 				break;
 		}
 
-		if (clip != null && m_rigidbody.velocity.sqrMagnitude > (velGate * velGate))
+		float impactSpeed = c.relativeVelocity.magnitude;
+		if (clip != null && impactSpeed > velGate)
 			audio.PlayOneShot(clip);
     }
 
