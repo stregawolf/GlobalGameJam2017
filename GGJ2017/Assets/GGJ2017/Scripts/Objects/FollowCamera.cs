@@ -28,7 +28,9 @@ public class FollowCamera : MonoBehaviour {
 			}
 			if (lookWeight != 0f) {
 				Vector3 lookAt = (ballPos * lookWeight - transform.position);
-				lookAt = Vector3.ProjectOnPlane(lookAt.normalized, Vector3.up);
+				float targetY = Mathf.Max(0, ballPos.y - 20.0f);
+				lookAt.y = targetY;
+				lookAt.Normalize();
 				Quaternion targetRotation = Quaternion.LookRotation(lookAt.normalized, Vector3.up);
 				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * lookSpeed);
 			}
