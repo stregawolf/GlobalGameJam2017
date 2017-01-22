@@ -275,7 +275,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    public IEnumerator HandleCameraFlash(float duration = 0.1f)
+    public IEnumerator HandleCameraFlash(float duration)
     { 
         var screenOverlay = Camera.main.GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>();
         screenOverlay.enabled = true;
@@ -284,7 +284,7 @@ public class Game : MonoBehaviour
     }
 
     //this works because we don't move the camera, probably has to be rethought otherwise
-    public IEnumerator HandleCameraShake(float duration = 0.1f, float intensity = 2.0f)
+    public IEnumerator HandleCameraShake(float duration, float intensity)
     {
         float timer = 0.0f;
         Vector3 cameraPosition = Camera.main.transform.position;
