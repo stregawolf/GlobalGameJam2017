@@ -14,6 +14,8 @@ public class TitleUIManager : BaseUIManager {
     public Transform m_cameraStart;
     public Transform m_cameraEnd;
 
+    public Text m_characterSelectText;
+
     public bool m_isTransitioning { get; protected set; }
 
     public enum TitleState
@@ -28,6 +30,8 @@ public class TitleUIManager : BaseUIManager {
     public Player[] m_selectableCharacters;
     public CharacterSelector[] m_selectors;
 
+    public float m_startWaitTime = 5.0f;
+
     protected int[] m_selectionCount;
     protected bool m_countDownStarted = false;
     protected int m_currentCount = 3;
@@ -38,6 +42,8 @@ public class TitleUIManager : BaseUIManager {
         m_selectionCount = new int[m_selectableCharacters.Length];
         m_isTransitioning = false;
         m_currentState = TitleState.Splash;
+
+        m_countDownTimer = m_startWaitTime;
     }
 
     protected void Start()
@@ -76,7 +82,30 @@ public class TitleUIManager : BaseUIManager {
 
                 if(confirmedCount == m_selectors.Length)
                 {
+                    if (m_countDownTimer == m_startWaitTime)
+                    {
+                        m_characterSelectText.color = Color.green;
+                        LeanTween.scale(m_characterSelectText.gameObject, Vector3.one * 1.25f, 0.25f).setEase(LeanTweenType.punch);
+                    }
 
+                    m_countDownTimer -= Time.deltaTime;
+
+                    m_characterSelectText.text = string.Format("Game starting in... {0}", m_countDownTimer.ToString("N0"));
+                    if (m_countDownTimer <= 0.0f)
+                    {
+                        m_countDownTimer = 0.0f;
+                        StartGame();
+                    }
+                }
+                else
+                {
+                    if(m_countDownTimer != m_startWaitTime)
+                    {
+                        m_characterSelectText.color = Color.black;
+                        LeanTween.scale(m_characterSelectText.gameObject, Vector3.one * 1.25f, 0.25f).setEase(LeanTweenType.punch);
+                        m_countDownTimer = m_startWaitTime;
+                        m_characterSelectText.text = "Select your character!";
+                    }
                 }
                 break;
         }
@@ -108,6 +137,11 @@ public class TitleUIManager : BaseUIManager {
             IncrementSelectionCount(m_selectors[i].m_playerIndex);
             UpdateSelector(m_selectors[i], true);
         }
+
+        Vector3 originalPos = m_characterSelectText.transform.position;
+        m_characterSelectText.transform.position = originalPos + Vector3.down * Screen.height;
+        m_characterSelectText.gameObject.SetActive(true);
+        DoTransitionTo(m_characterSelectText.gameObject, originalPos, 1.0f, 0, LeanTweenType.easeOutBack);
     }
 
     public void HandleSelectorInput(CharacterSelector selector)
@@ -153,6 +187,7 @@ public class TitleUIManager : BaseUIManager {
         if (m_selectionCount[playerIndex] <= 0)
         {
             m_selectableCharacters[playerIndex].m_controls.m_passiveForceHead = 0.0f;
+            m_selectableCharacters[playerIndex].m_controls.m_passiveForceArm = 0.0f;
         }
     }
 
@@ -162,6 +197,7 @@ public class TitleUIManager : BaseUIManager {
         if (m_selectionCount[playerIndex] > 0)
         {
             m_selectableCharacters[playerIndex].m_controls.m_passiveForceHead = 200.0f;
+            m_selectableCharacters[playerIndex].m_controls.m_passiveForceArm = 20.0f;
         }
     }
 
@@ -188,6 +224,9 @@ public class TitleUIManager : BaseUIManager {
 
     public void StartGame()
     {
+        m_isTransitioning = true;
+        m_currentState = TitleState.GameTransition;
+
         SceneManager.LoadScene(m_gameSceneName);
     }
 }
