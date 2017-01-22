@@ -21,12 +21,12 @@ public class FollowCamera : MonoBehaviour {
 	void FixedUpdate () {
 		if (ball != null) {
 			Vector3 ballPos = ball.transform.position;
-			if (moveWeight > 0f) {
+			if (moveWeight != 0f) {
 				float targetY = Mathf.Max(startPos.y, ballPos.y * moveWeight - 5.0f);
 				Vector3 targetPosition = new Vector3(ballPos.x * moveWeight, targetY, transform.position.z);
 				transform.position = Vector3.Lerp(transform.position, targetPosition, Time.fixedDeltaTime * moveSpeed);
 			}
-			if (lookWeight > 0f) {
+			if (lookWeight != 0f) {
 				Vector3 lookAt = (ballPos * lookWeight - transform.position);
 				lookAt = Vector3.ProjectOnPlane(lookAt.normalized, Vector3.up);
 				Quaternion targetRotation = Quaternion.LookRotation(lookAt.normalized, Vector3.up);
