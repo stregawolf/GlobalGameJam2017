@@ -266,11 +266,16 @@ public class Game : MonoBehaviour
         }
 
         EventManager.OnScoreChange.Dispatch();
-        m_roundStarted = false;
+        EndRound();
         StartCoroutine(HandleCameraFlash(0.12f));
         StartCoroutine(HandleCameraShake(0.75f,1.0f));
 
         StartCoroutine(HandleScoringFeedback(delay));
+    }
+
+    public void EndRound()
+    {
+        m_roundStarted = false;
     }
 
     public void SetEnvironmentColor(Color c)
