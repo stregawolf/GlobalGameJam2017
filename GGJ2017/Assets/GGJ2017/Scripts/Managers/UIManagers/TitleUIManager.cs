@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using XboxCtrlrInput;
 
 public class TitleUIManager : BaseUIManager {
     public string m_gameSceneName = string.Empty;
@@ -110,6 +111,11 @@ public class TitleUIManager : BaseUIManager {
                     }
                 }
                 break;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape) || XCI.GetButtonDown(XboxButton.Back, XboxController.All))
+        {
+            Application.Quit();
         }
     }
 

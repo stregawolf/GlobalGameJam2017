@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+using XboxCtrlrInput;
+
 public class VolleyBallUIManager : BaseUIManager {
     public Text m_centerText;
 
@@ -30,10 +32,40 @@ public class VolleyBallUIManager : BaseUIManager {
     {
         if (Game.Instance.m_gameCompleted)
         {
+            if (XCI.GetNumPluggedCtrlrs() > 0)
+            {
+                if (XCI.GetButtonDown(XboxButton.Y, XboxController.All))
+                {
+                    OnRematchPressed();
+                }
+                else if (XCI.GetButtonDown(XboxButton.X, XboxController.All))
+                {
+                    OnQuitPressed();
+                }
+            }
             return;
         }
+        
+        if(XCI.GetNumPluggedCtrlrs() > 0)
+        {
+            if (m_pauseMenu.activeSelf)
+            {
+                if (XCI.GetButtonDown(XboxButton.B, XboxController.All))
+                {
+                    ResumeGame();
+                }
+                else if (XCI.GetButtonDown(XboxButton.Y, XboxController.All))
+                {
+                    OnPauseRematchPressed();
+                }
+                else if (XCI.GetButtonDown(XboxButton.X, XboxController.All))
+                {
+                    OnPauseQuitPressed();
+                }
+            }
+        }
 
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || (XCI.GetNumPluggedCtrlrs() > 0 && XCI.GetButtonDown(XboxButton.Start, XboxController.All)))
         {
             if (m_pauseMenu.activeSelf)
             {
@@ -44,7 +76,6 @@ public class VolleyBallUIManager : BaseUIManager {
                 PauseGame();
             }
         }
-        
     }
 
     public void OnDestroy()
@@ -70,6 +101,11 @@ public class VolleyBallUIManager : BaseUIManager {
 
     public void DoRematchTransition()
     {
+        if (m_countDownCoroutine != null)
+        {
+            StopCoroutine(m_countDownCoroutine);
+        }
+
         if (!m_centerText.gameObject.activeSelf)
         {
             LeanTween.delayedCall(1.0f, Game.Instance.StartGame);
