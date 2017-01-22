@@ -16,7 +16,7 @@ public class Ball : BaseObject
 
 	public GameObject leftTree;
 	public GameObject rightTree;
-	public Vector3 m_treeOffset;
+	public float m_treeOffset = 0.85f;
 
     public GameObject m_ground;
 
@@ -89,7 +89,7 @@ public class Ball : BaseObject
         }
     }
 
-	void Update()
+	void FixedUpdate()
 	{
 		bool inWindArea = false;
 		if (m_windStrength > 0f) {
@@ -104,12 +104,14 @@ public class Ball : BaseObject
 				inWindArea = true;
 			}
 		} else {
-			Vector3 ballScreenPos = Camera.main.WorldToScreenPoint(transform.position);
-			Vector3 leftTreePos = Camera.main.WorldToScreenPoint(leftTree.transform.position + m_treeOffset);
-			Vector3 rightTreePos = Camera.main.WorldToScreenPoint(rightTree.transform.position - m_treeOffset);
-			if ((ballScreenPos.x < leftTreePos.x && m_rigidbody.velocity.x < 0) || (ballScreenPos.x > rightTreePos.x && m_rigidbody.velocity.x > 0)) {
+			Vector3 ballScreenPos = Camera.main.WorldToScreenPoint(transform.position + m_rigidbody.velocity * Time.fixedDeltaTime);
+			Vector3 leftTreePos = Camera.main.WorldToScreenPoint(leftTree.transform.position + m_treeOffset * Camera.main.transform.right);
+			Vector3 rightTreePos = Camera.main.WorldToScreenPoint(rightTree.transform.position - m_treeOffset * Camera.main.transform.right);
+			if ((transform.position.x < 0 && ballScreenPos.x < leftTreePos.x && m_rigidbody.velocity.x < 0) || 
+				(transform.position.x > 0 && ballScreenPos.x > rightTreePos.x && m_rigidbody.velocity.x > 0)) {
 				m_rigidbody.velocity = new Vector3(-m_rigidbody.velocity.x, m_rigidbody.velocity.y, 0);
 			}
+
 		}
 
 		if (drawWindArea) {
