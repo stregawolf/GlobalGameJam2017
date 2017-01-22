@@ -175,18 +175,33 @@ public class Game : MonoBehaviour
             {
                 m_gameCompleted = true;
                 // display "team wins the game!"
+                ShowTeamExpression(Player.Expression.Excited, Player.Expression.Angry, team);
                 EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the game!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
             }
             else
             {
                 // display "team wins the match!"
+                ShowTeamExpression(Player.Expression.Excited, Player.Expression.Angry, team);
                 EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the match!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
             }
         }
         else
         {
             // display "team scores!"
+            ShowTeamExpression(Player.Expression.Excited, Player.Expression.Sad, team);
             EventManager.DisplayCenterText.Dispatch(string.Format("{0} scores!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
+        }
+    }
+
+    public void ShowTeamExpression(Player.Expression winExpression, Player.Expression loseExpression, Team winningTeam)
+    {
+        for (int i = 0; i < m_teams.Length; ++i)
+        {
+            Team team = m_teams[i];
+            for (int p = 0; p < team.m_players.Length; ++p)
+            {
+                team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression);
+            }
         }
     }
 
