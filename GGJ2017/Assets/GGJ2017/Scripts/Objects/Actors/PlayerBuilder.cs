@@ -16,6 +16,9 @@ public class PlayerBuilder : MonoBehaviour {
 	public Vector3 bodySegmentScale = Vector3.one;
 	public Vector3 armSegmentScale = Vector3.one;
 
+	public AnimationCurve bodyCurve;
+	public AnimationCurve armCurve;
+
 	public SpringJoint springSettings;
 
 	private CharacterControls controls;
@@ -41,7 +44,11 @@ public class PlayerBuilder : MonoBehaviour {
 			currentSegment.name = "Body Segment(" + i + ")";
 			currentSegment.transform.parent = bodyChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
-			currentSegment.transform.localScale = bodySegmentScale;
+			Vector3 scale = bodySegmentScale;
+			if (bodyCurve != null) {
+				scale *= bodyCurve.Evaluate((float)i / (float)bodySegments);
+			}
+			currentSegment.transform.localScale = scale;
 			currentSegment.transform.localPosition = Vector3.up * bodySegmentScale.y * i;
 			Rigidbody rb = currentSegment.GetComponent<Rigidbody>();
 			rb.isKinematic = i == 0;
@@ -78,7 +85,12 @@ public class PlayerBuilder : MonoBehaviour {
 			currentSegment.name = "Arm Segment(" + i + ")";
 			currentSegment.transform.parent = rightArmChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
-			currentSegment.transform.localScale = armSegmentScale;
+
+			Vector3 scale = armSegmentScale;
+			if (armCurve != null) {
+				scale *= armCurve.Evaluate((float)i / (float)armSegments);
+			}
+			currentSegment.transform.localScale = scale;
 			currentSegment.transform.localPosition = Vector3.up * armSegmentScale.y * i;
 			Rigidbody rb = currentSegment.GetComponent<Rigidbody>();
 
@@ -113,7 +125,12 @@ public class PlayerBuilder : MonoBehaviour {
 			currentSegment.name = "Arm Segment(" + i + ")";
 			currentSegment.transform.parent = leftArmChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
-			currentSegment.transform.localScale = armSegmentScale;
+
+			Vector3 scale = armSegmentScale;
+			if (armCurve != null) {
+				scale *= armCurve.Evaluate((float)i / (float)armSegments);
+			}
+			currentSegment.transform.localScale = scale;
 			currentSegment.transform.localPosition = Vector3.up * armSegmentScale.y * i;
 			Rigidbody rb = currentSegment.GetComponent<Rigidbody>();
 
