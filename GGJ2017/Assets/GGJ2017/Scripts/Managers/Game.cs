@@ -100,7 +100,7 @@ public class Game : MonoBehaviour
 
     protected IEnumerator HandleStartRound()
     {
-        EventManager.StartCountDown.Dispatch(3, 3.9f);
+        EventManager.StartCountDown.Dispatch(3, 4.25f);
 
         m_ball.Reset();
 
