@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: a7f985bd874ca4935b50a0cd58550419
-timeCreated: 1485052655
+guid: 22d7bc0bc2e3048a1879a4556317e2a4
+timeCreated: 1485070643
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -66,7 +66,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
+  - buildTarget: iPhone
     maxTextureSize: 2048
     textureFormat: -1
     textureCompression: 1
