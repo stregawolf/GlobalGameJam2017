@@ -17,4 +17,5 @@ public class CharacterData : ScriptableObject {
     public Sprite m_faceAngry;
     public Sprite m_faceExcited;
     public Sprite m_faceSad;
+	public Sprite m_faceShocked;
 }
