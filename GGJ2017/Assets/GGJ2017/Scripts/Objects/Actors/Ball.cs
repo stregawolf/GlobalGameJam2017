@@ -166,7 +166,7 @@ public class Ball : BaseObject
 				break;
 			default:
 				clip = hits[Random.Range(0, hits.Length)];
-				velGate = 15.0f;
+				velGate = 1s5.0f;
 				break;
 		}
 
