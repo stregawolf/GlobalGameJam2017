@@ -90,11 +90,13 @@ public class Ball : BaseObject
 		bool inWindArea = false;
 		if (m_windStrength > 0f) {
 			if (Mathf.Abs(transform.position.x) + 0.5f * m_ballScale > m_windX) {
-				m_rigidbody.AddForce(m_windStrength * Vector3.right * -Mathf.Sign(transform.position.x));
+				if(Mathf.Sign(m_rigidbody.velocity.x) == Mathf.Sign(transform.position.x))
+					m_rigidbody.AddForce(m_windStrength * Vector3.right * -Mathf.Sign(transform.position.x));
 				inWindArea = true;
 			}
 			if (transform.position.y + 0.5f * m_ballScale > m_windY) {
-				m_rigidbody.AddForce(m_windStrength * -Vector3.up);
+				if(m_rigidbody.velocity.y > 0)
+					m_rigidbody.AddForce(m_windStrength * -Vector3.up);
 				inWindArea = true;
 			}
 		}
