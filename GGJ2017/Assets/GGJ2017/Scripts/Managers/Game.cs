@@ -198,13 +198,15 @@ public class Game : MonoBehaviour
     }
 
     public void ShowTeamExpression(Player.Expression winExpression, Player.Expression loseExpression, Team winningTeam, float duration = 2.0f)
-    {
+	{
         for (int i = 0; i < m_teams.Length; ++i)
         {
             Team team = m_teams[i];
             for (int p = 0; p < team.m_players.Length; ++p)
-            {
-                team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression, duration);
+			{
+				
+				team.m_players[p].MaybePlaySound((team == winningTeam) ? team.m_players[p].m_data.m_WinClips : team.m_players[p].m_data.m_LoseClips);
+				team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression, duration);
             }
         }
     }
@@ -269,6 +271,7 @@ public class Game : MonoBehaviour
         EndRound();
         StartCoroutine(HandleCameraFlash(0.12f));
         StartCoroutine(HandleCameraShake(0.75f,1.0f));
+        StartCoroutine(HandleCameraWrap(0.2f, -60.0f));
 
         StartCoroutine(HandleScoringFeedback(delay));
     }
@@ -293,6 +296,22 @@ public class Game : MonoBehaviour
         screenOverlay.enabled = true;
         yield return new WaitForSeconds(duration);
         screenOverlay.enabled = false;
+    }
+
+    public void WrapCamera(float intensity)
+    {
+        var lensAberration = Camera.main.GetComponent<UnityStandardAssets.CinematicEffects.LensAberrations>();
+
+        lensAberration.distortion.amount = intensity;
+    }
+
+    public IEnumerator HandleCameraWrap(float duration, float intensity)
+    {
+        var lensAberration = Camera.main.GetComponent<UnityStandardAssets.CinematicEffects.LensAberrations>();
+        lensAberration.enabled = true;        
+        LeanTween.value(lensAberration.gameObject,WrapCamera,0.0f,intensity,duration).setLoopCount(2).setLoopPingPong();
+        yield return new WaitForSeconds(duration*2);
+        lensAberration.enabled = false;
     }
 
     //this works because we don't move the camera, probably has to be rethought otherwise
