@@ -154,7 +154,7 @@ public class Game : MonoBehaviour
         {
             ResetScore();
             team.m_matchPoints++;
-            if (team.m_matchPoints > m_matchesToWinGame)
+            if (team.m_matchPoints >= m_matchesToWinGame)
             {
                 m_gameCompleted = true;
                 // display "team wins the game!"
