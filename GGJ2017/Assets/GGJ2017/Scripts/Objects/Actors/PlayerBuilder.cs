@@ -46,7 +46,8 @@ public class PlayerBuilder : MonoBehaviour {
 			currentSegment.transform.localRotation = Quaternion.identity;
 			Vector3 scale = bodySegmentScale;
 			if (bodyCurve != null) {
-				scale *= bodyCurve.Evaluate((float)i / (float)bodySegments);
+				float scaleMod = bodyCurve.Evaluate((float)i / (float)bodySegments);
+				scale = new Vector3(scale.x * scaleMod, scale.y, scale.z * scaleMod);
 			}
 			currentSegment.transform.localScale = scale;
 			currentSegment.transform.localPosition = Vector3.up * bodySegmentScale.y * i;
@@ -88,7 +89,8 @@ public class PlayerBuilder : MonoBehaviour {
 
 			Vector3 scale = armSegmentScale;
 			if (armCurve != null) {
-				scale *= armCurve.Evaluate((float)i / (float)armSegments);
+				float scaleMod = armCurve.Evaluate((float)i / (float)armSegments);
+				scale = new Vector3(scale.x * scaleMod, scale.y, scale.z * scaleMod);
 			}
 			currentSegment.transform.localScale = scale;
 			currentSegment.transform.localPosition = Vector3.up * armSegmentScale.y * i;
@@ -128,7 +130,8 @@ public class PlayerBuilder : MonoBehaviour {
 
 			Vector3 scale = armSegmentScale;
 			if (armCurve != null) {
-				scale *= armCurve.Evaluate((float)i / (float)armSegments);
+				float scaleMod = armCurve.Evaluate((float)i / (float)armSegments);
+				scale = new Vector3(scale.x * scaleMod, scale.y, scale.z * scaleMod);
 			}
 			currentSegment.transform.localScale = scale;
 			currentSegment.transform.localPosition = Vector3.up * armSegmentScale.y * i;
