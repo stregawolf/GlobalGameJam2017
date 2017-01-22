@@ -170,7 +170,7 @@ public class Game : MonoBehaviour
         else
         {
             // display "team scores!"
-            ShowTeamExpression(Player.Expression.Excited, Player.Expression.Sad, team);
+            ShowTeamExpression(Player.Expression.Excited, (Random.value > 0.5)?Player.Expression.Shocked:Player.Expression.Sad, team);
             EventManager.DisplayCenterText.Dispatch(string.Format("{0} scores!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
         }
     }

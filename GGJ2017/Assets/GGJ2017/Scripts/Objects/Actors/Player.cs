@@ -21,6 +21,7 @@ public class Player : BaseActor
         Excited,
         Angry,
         Sad,
+        Shocked,
     }
 
     public Expression m_currentExpression = Expression.Default;
@@ -90,6 +91,9 @@ public class Player : BaseActor
                 break;
             case Expression.Sad:
                 m_head.m_face.sprite = m_data.m_faceSad;
+                break;
+            case Expression.Shocked:
+                m_head.m_face.sprite = m_data.m_faceShocked;
                 break;
         }
 
