@@ -7,6 +7,8 @@ public class Game : MonoBehaviour
 {
     public static Game Instance { get; protected set; }
 
+    public string m_uiSceneName;
+
     public int m_scoreToWinMatch = 10;
     public int m_matchesToWinGame = 3;
 
@@ -51,12 +53,13 @@ public class Game : MonoBehaviour
         m_gameCompleted = false;
 
 
-        SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+        SceneManager.LoadScene(m_uiSceneName, LoadSceneMode.Additive);
     }
 
     protected void Start()
     {
         m_ball.Reset();
+        StartGame();
     }
 
     protected void OnDestroy()
