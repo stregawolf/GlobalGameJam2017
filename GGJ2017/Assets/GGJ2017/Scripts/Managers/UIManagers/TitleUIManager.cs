@@ -230,7 +230,7 @@ public class TitleUIManager : BaseUIManager {
     public Vector3 GetScreenPosition(Player player, int stackPos = 0)
     {
         Vector3 screenPos = Camera.main.WorldToScreenPoint(player.transform.position + Vector3.up * 14.0f);
-        screenPos.y += 50 * stackPos-1;
+        screenPos.y += 50*transform.localScale.y * stackPos-1;
         return screenPos;
     }
 
