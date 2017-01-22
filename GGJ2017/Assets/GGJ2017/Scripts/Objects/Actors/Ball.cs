@@ -25,6 +25,9 @@ public class Ball : BaseObject
 
     public Rigidbody m_rigidbody;
 
+    public ParticleSystem m_sandParticlePrefab;
+    private ParticleSystem m_sandParticle;
+
     protected Vector3 m_originalPosition;
     protected Quaternion m_originalRotation;
 
@@ -45,6 +48,7 @@ public class Ball : BaseObject
         m_originalPosition = transform.position;
         m_originalRotation = transform.rotation;
         m_trailRenderer = GetComponent<TrailRenderer>();
+        m_sandParticle = Instantiate(m_sandParticlePrefab);
     }
 
     public void Reset()
@@ -146,6 +150,8 @@ public class Ball : BaseObject
         SetPlayer(c.collider.GetComponentInParent<Player>());
         if (c.collider.gameObject == m_ground)
         {
+            m_sandParticle.transform.position = c.contacts[0].point;
+            m_sandParticle.Play();
             EventManager.OnBallHitGround.Dispatch();
         }
     }
