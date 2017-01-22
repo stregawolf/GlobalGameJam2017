@@ -75,6 +75,7 @@ public class Ball : BaseObject
     {
         if (Game.Instance.m_roundStarted && player != null)
         {
+            player.ShowExpression(Player.Expression.Excited);
             m_lastPlayer = player;
             m_pointTeamId = Game.TeamId.Invalid;
 			if(m_changeColors)

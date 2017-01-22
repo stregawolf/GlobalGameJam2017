@@ -19,6 +19,10 @@ public class BaseObject : MonoBehaviour {
     {
         for(int i = 0; i < m_renderers.Length; ++i)
         {
+            if(m_renderers[i] is SpriteRenderer)
+            {
+                continue;
+            }
             m_renderers[i].material.color = c;
         }
     }

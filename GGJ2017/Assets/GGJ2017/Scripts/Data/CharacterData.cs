@@ -13,8 +13,8 @@ public class CharacterData : ScriptableObject {
     public AnimationCurve m_bodyCurve;
     public AnimationCurve m_armCurve;
 
-    public Texture m_faceDefault;
-    public Texture m_faceAngry;
-    public Texture m_faceExcited;
-    public Texture m_faceSad;
+    public Sprite m_faceDefault;
+    public Sprite m_faceAngry;
+    public Sprite m_faceExcited;
+    public Sprite m_faceSad;
 }
