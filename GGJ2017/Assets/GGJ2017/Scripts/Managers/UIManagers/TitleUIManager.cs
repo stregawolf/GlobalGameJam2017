@@ -10,6 +10,7 @@ public class TitleUIManager : BaseUIManager {
     public GameObject m_startButton;
     public RectTransform m_splashTitle;
     public RectTransform m_splashCharacter;
+    public RectTransform m_starBurst;
 
     public Transform m_cameraStart;
     public Transform m_cameraEnd;
@@ -61,10 +62,10 @@ public class TitleUIManager : BaseUIManager {
         {
             return;
         }
-
         switch (m_currentState)
         {
             case TitleState.Splash:
+                m_starBurst.transform.Rotate(0, 0, 180.0f * Time.deltaTime);
                 if (Input.anyKeyDown)
                 {
                     OnStartPressed();
@@ -119,9 +120,10 @@ public class TitleUIManager : BaseUIManager {
             return;
         }
 
+        DoSpinTransitionOut(m_starBurst.gameObject, 1.25f);
         DoSpinTransitionOut(m_startButton, 0.5f, 2, 0.25f);
-        DoTransitionTo(m_splashCharacter, Vector3.down * Screen.height, 0.5f, 0.5f, LeanTweenType.easeInBack);
-        DoTransitionTo(m_splashTitle, Vector3.up * Screen.height, 0.5f, 1.0f, LeanTweenType.easeInBack);
+        DoTransitionTo(m_splashCharacter, Vector3.down * Screen.height*2, 0.5f, 0.5f, LeanTweenType.easeInBack);
+        DoTransitionTo(m_splashTitle, Vector3.up * Screen.height*2, 0.5f, 1.0f, LeanTweenType.easeInBack);
         LeanTween.move(Camera.main.gameObject, m_cameraEnd.position, 1.5f).setDelay(1.25f).setEase(LeanTweenType.easeInOutSine);
         m_isTransitioning = true;
 
@@ -137,6 +139,7 @@ public class TitleUIManager : BaseUIManager {
         {
             IncrementSelectionCount(m_selectors[i].m_playerIndex);
             UpdateSelector(m_selectors[i], true);
+            DoSpinTransitionIn(m_selectors[i].gameObject, 0.0f, 0.25f, Vector3.one);
         }
 
         Vector3 originalPos = m_characterSelectText.transform.position;
@@ -229,6 +232,12 @@ public class TitleUIManager : BaseUIManager {
     {
         m_isTransitioning = true;
         m_currentState = TitleState.GameTransition;
+
+        for (int i = 0; i < m_selectors.Length; ++i)
+        {
+            DoSpinTransitionOut(m_selectors[i].gameObject, 0.25f);
+        }
+
         FadeOut(1.0f);
 
         for(int i = 0; i < m_selectors.Length; ++i)
