@@ -14,6 +14,10 @@ public class Ball : BaseObject
 	public float m_windY = 0;
 	public float m_windStrength = 0;
 
+	public GameObject leftTree;
+	public GameObject rightTree;
+	public Vector3 m_treeOffset;
+
     public GameObject m_ground;
 
 	public bool drawWindArea = false;
@@ -90,14 +94,21 @@ public class Ball : BaseObject
 		bool inWindArea = false;
 		if (m_windStrength > 0f) {
 			if (Mathf.Abs(transform.position.x) + 0.5f * m_ballScale > m_windX) {
-				if(Mathf.Sign(m_rigidbody.velocity.x) == Mathf.Sign(transform.position.x))
+				if (Mathf.Sign(m_rigidbody.velocity.x) == Mathf.Sign(transform.position.x))
 					m_rigidbody.AddForce(m_windStrength * Vector3.right * -Mathf.Sign(transform.position.x));
 				inWindArea = true;
 			}
 			if (transform.position.y + 0.5f * m_ballScale > m_windY) {
-				if(m_rigidbody.velocity.y > 0)
+				if (m_rigidbody.velocity.y > 0)
 					m_rigidbody.AddForce(m_windStrength * -Vector3.up);
 				inWindArea = true;
+			}
+		} else {
+			Vector3 ballScreenPos = Camera.main.WorldToScreenPoint(transform.position);
+			Vector3 leftTreePos = Camera.main.WorldToScreenPoint(leftTree.transform.position + m_treeOffset);
+			Vector3 rightTreePos = Camera.main.WorldToScreenPoint(rightTree.transform.position - m_treeOffset);
+			if ((ballScreenPos.x < leftTreePos.x && m_rigidbody.velocity.x < 0) || (ballScreenPos.x > rightTreePos.x && m_rigidbody.velocity.x > 0)) {
+				m_rigidbody.velocity = new Vector3(-m_rigidbody.velocity.x, m_rigidbody.velocity.y, 0);
 			}
 		}
 
