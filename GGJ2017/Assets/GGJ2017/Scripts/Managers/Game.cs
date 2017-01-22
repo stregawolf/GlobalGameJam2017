@@ -34,6 +34,7 @@ public class Game : MonoBehaviour
     public Team[] m_teams;
     public BaseObject[] m_environmentPieces;
 
+    public bool m_gameStarted { get; protected set; }
     public bool m_gameCompleted { get; protected set; }
     public bool m_roundStarted { get; protected set; }
 
@@ -45,10 +46,17 @@ public class Game : MonoBehaviour
         Instance = this;
         EventManager.OnBallHitGround.Register(OnBallHitGround);
 
+        m_gameStarted = false;
         m_roundStarted = false;
         m_gameCompleted = false;
 
+
         SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+    }
+
+    protected void Start()
+    {
+        m_ball.Reset();
     }
 
     protected void OnDestroy()
@@ -57,16 +65,22 @@ public class Game : MonoBehaviour
         EventManager.OnBallHitGround.Unregister(OnBallHitGround);
     }
 
+    
     protected void Update()
     {
-        if(m_gameCompleted)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(Input.anyKeyDown)
+            if(!m_gameStarted)
+            {
+                StartGame();
+            }
+            else if(m_gameCompleted)
             {
                 RestartGame();
             }
         }
     }
+    
     
     public void RestartGame()
     {
@@ -86,13 +100,13 @@ public class Game : MonoBehaviour
         }
     }
 
-    protected void Start()
+    public void StartGame()
     {
         InitPlayers();
         StartRound();
     }
 
-    protected void StartRound()
+    public void StartRound()
     {
         StartCoroutine(HandleStartRound());
     }
