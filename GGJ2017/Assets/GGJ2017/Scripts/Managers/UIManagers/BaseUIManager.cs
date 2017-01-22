@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class BaseUIManager : MonoBehaviour {
 
-    public void DoSpinTransitionIn(GameObject obj, float displayTime, float transitionTime, Vector3 toScale, float spinMultiplier = 2, bool autoHide = true)
+    public LTDescr DoTransitionTo(RectTransform obj, Vector3 pos, float transitionTime, float delay = 0.0f, LeanTweenType ease = LeanTweenType.easeInOutSine)
+    {
+        return LeanTween.move(obj, pos, transitionTime).setDelay(delay).setEase(ease);
+    }
+
+    public LTDescr DoSpinTransitionIn(GameObject obj, float displayTime, float transitionTime, Vector3 toScale, float spinMultiplier = 2, bool autoHide = true)
     {
         LeanTween.cancel(obj);
         obj.SetActive(true);
@@ -12,7 +17,7 @@ public class BaseUIManager : MonoBehaviour {
         obj.transform.localScale = Vector3.zero;
         obj.transform.rotation = Quaternion.identity;
         LeanTween.rotateZ(obj, 360 * spinMultiplier, transitionTime * 0.9f);
-        LeanTween.scale(obj, toScale, transitionTime).setEase(LeanTweenType.easeSpring).setIgnoreTimeScale(true)
+        return LeanTween.scale(obj, toScale, transitionTime).setEase(LeanTweenType.easeSpring).setIgnoreTimeScale(true)
             .setOnComplete(() =>
             {
                 if (autoHide)
@@ -22,10 +27,10 @@ public class BaseUIManager : MonoBehaviour {
             });
     }
 
-    public void DoSpinTransitionOut(GameObject obj, float transitionTime, float spinMultiplier = 2, float delay = 0.0f)
+    public LTDescr DoSpinTransitionOut(GameObject obj, float transitionTime, float spinMultiplier = 2, float delay = 0.0f)
     {
         LeanTween.rotateZ(obj, 360 * spinMultiplier, transitionTime).setDelay(delay);
-        LeanTween.scale(obj, Vector3.zero, transitionTime).setDelay(delay).setEase(LeanTweenType.easeSpring).setOnComplete(() =>
+        return LeanTween.scale(obj, Vector3.zero, transitionTime).setDelay(delay).setEase(LeanTweenType.easeSpring).setOnComplete(() =>
         {
             obj.SetActive(false);
         });
