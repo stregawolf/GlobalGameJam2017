@@ -8,6 +8,7 @@ public class Ball : BaseObject
     public float m_initialImpulse = 10.0f;
     public float m_contactImpulse = 1.0f;
     public float ballScale = 1f;
+	public bool changeColors = false;
 
     public GameObject m_ground;
 
