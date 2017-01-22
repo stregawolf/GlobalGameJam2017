@@ -16,9 +16,14 @@ public class Wave : MonoBehaviour
     public float spring = 0.3f;
     public float waveStrength = 20.0f;
 
-
     public int width = 200;
     public int height = 25;
+
+    private struct Int2
+    {
+        public int x;
+        public int y;
+    };
 
     private Mesh mesh;
     private float[,,] buffer;
@@ -27,8 +32,10 @@ public class Wave : MonoBehaviour
 
     private int currentBuffer = 0;
 
+    private Collider m_collider;
+
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         buffer = new float[width, height, 2];
         velocityBuffer = new float[width, height];
@@ -43,15 +50,16 @@ public class Wave : MonoBehaviour
 
         mesh = new Mesh();
 
+        m_collider = GetComponent<Collider>();
         var mf = GetComponent<MeshFilter>();
         mf.mesh = mesh;
 
         var uv = new Vector2[width * height];
 
-        for(int i=0;i<width;i++)
+        for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
             {
-                vertices[j * width + i] = new Vector3(i - width/2, 0.0f, j - height/2);
+                vertices[j * width + i] = new Vector3(i - width / 2, 0.0f, j - height / 2);
                 uv[j * width + i] = new Vector2((float)i / (float)width, (float)j / (float)height);
             }
 
@@ -82,32 +90,60 @@ public class Wave : MonoBehaviour
         mesh.UploadMeshData(false);
     }
 
+    Int2 WorldToGridCoordinates(Vector3 world)
+    {
+        Vector3 worldScaled = Vector3.Scale(world, transform.localScale.InvertVector());
+
+        int i = Mathf.RoundToInt(Mathf.Clamp(worldScaled.x + width / 2, 0, width - 1));
+        int j = Mathf.RoundToInt(Mathf.Clamp(worldScaled.z + height / 2, 0, height - 1));
+
+        return new Int2 { x = i, y = j };
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         var contact = collision.contacts[0];
+        var grid = WorldToGridCoordinates(contact.point);
+     
+        velocityBuffer[grid.x, grid.y] = collision.impulse.y * waveStrength;
+    }
 
-        Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
+    void OnTriggerEnter(Collider otherCollider)
+    {
+        Rigidbody rigidBody = otherCollider.attachedRigidbody;
 
-        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width - 1));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height - 1));
+        if (rigidBody)
+        {
+            var point = m_collider.ClosestPointOnBounds(otherCollider.transform.position);
+            var grid = WorldToGridCoordinates(point);
 
-        velocityBuffer[i, j] = collision.impulse.y * waveStrength;
+            velocityBuffer[grid.x, grid.y] = waveStrength * rigidBody.velocity.magnitude;
+        }
     }
 
     void OnCollisionStay(Collision collision)
     {
         var contact = collision.contacts[0];
+        var grid = WorldToGridCoordinates(contact.point);
 
-        Vector3 contactScaled = Vector3.Scale(contact.point, transform.localScale.InvertVector());
-
-        int i = Mathf.RoundToInt(Mathf.Clamp(contactScaled.x + width/2, 0, width - 1));
-        int j = Mathf.RoundToInt(Mathf.Clamp(contactScaled.z + height/2, 0, height - 1));
-
-        collision.rigidbody.AddForce(contact.normal * velocityBuffer[i, j] * waveStrength);
+        collision.rigidbody.AddForce(contact.normal * velocityBuffer[grid.x, grid.y] * waveStrength);
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    void OnTriggerStay(Collider otherCollider)
+    {
+        Rigidbody rigidBody = otherCollider.attachedRigidbody;
+
+        if (rigidBody)
+        {
+            var point = m_collider.ClosestPointOnBounds(otherCollider.transform.position);
+            var grid = WorldToGridCoordinates(point);
+
+            rigidBody.AddForce(Vector3.up * velocityBuffer[grid.x, grid.y] * waveStrength);
+        }
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
         if (Input.GetMouseButtonUp(0))
         {
