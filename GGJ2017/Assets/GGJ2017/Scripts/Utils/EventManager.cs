@@ -16,4 +16,6 @@ public static class EventManager
     /// string text to display, float display time, float transition time, vector3 toSize
     /// </summary>
     public static readonly CallbackEvent<string, float, float, Vector3> DisplayCenterText = new CallbackEvent<string, float, float, Vector3>();
+
+    public static readonly CallbackEvent OnGameComplete = new CallbackEvent();
 }
