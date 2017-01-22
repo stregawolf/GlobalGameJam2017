@@ -246,6 +246,8 @@ public class Game : MonoBehaviour
 
         EventManager.OnScoreChange.Dispatch();
         m_roundStarted = false;
+        StartCoroutine(HandleCameraFlash(0.12f));
+        StartCoroutine(HandleCameraShake(0.75f,1.0f));
         StartCoroutine(HandleScoringFeedback());
     }
 
@@ -256,6 +258,35 @@ public class Game : MonoBehaviour
         {
             m_environmentPieces[i].SetColor(m_environmentColor);
         }
+    }
+
+    public IEnumerator HandleCameraFlash(float duration = 0.1f)
+    { 
+        var screenOverlay = Camera.main.GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>();
+        screenOverlay.enabled = true;
+        yield return new WaitForSeconds(duration);
+        screenOverlay.enabled = false;
+    }
+
+    //this works because we don't move the camera, probably has to be rethought otherwise
+    public IEnumerator HandleCameraShake(float duration = 0.1f, float intensity = 2.0f)
+    {
+        float timer = 0.0f;
+        Vector3 cameraPosition = Camera.main.transform.position;
+        while(timer<duration)
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+
+            float strength = (1.0f - timer / duration);
+            float xoff = Random.Range(-intensity,intensity) * strength;
+            float yoff = Random.Range(-intensity, intensity) * strength;
+
+            Camera.main.transform.position = cameraPosition;
+            Camera.main.transform.Translate(new Vector3(xoff, yoff, 0.0f), Space.Self);
+        }
+
+        Camera.main.transform.position = cameraPosition;
     }
 
     public IEnumerator HandleTimeFlux(float duration = 2.0f)
