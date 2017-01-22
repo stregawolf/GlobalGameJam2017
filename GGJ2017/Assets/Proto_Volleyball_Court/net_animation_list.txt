@@ -1,0 +1,5 @@
+Net Animation List (30 fps)
+
+frame: 010-030 bounce up
+frame: 040-060 bounce right
+frame: 080-100 bounce left
