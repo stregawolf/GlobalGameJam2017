@@ -114,7 +114,7 @@ public class Player : BaseActor
 
 	public void MaybePlaySound(AudioClip[] clips)
 	{
-		if (Random.value > 0.7f && !audio.isPlaying) {
+		if (Random.value > 0.5f && !audio.isPlaying) {
 			if (clips.Length != 0) {
 				AudioClip clip = clips[Random.Range(0, clips.Length)];
 				audio.PlayOneShot(clip);
