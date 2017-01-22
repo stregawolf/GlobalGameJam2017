@@ -44,6 +44,7 @@ public class TitleUIManager : BaseUIManager {
         m_currentState = TitleState.Splash;
 
         m_countDownTimer = m_startWaitTime;
+        FadeIn();
     }
 
     protected void Start()
@@ -226,7 +227,17 @@ public class TitleUIManager : BaseUIManager {
     {
         m_isTransitioning = true;
         m_currentState = TitleState.GameTransition;
+        FadeOut(1.0f);
 
+        for(int i = 0; i < m_selectors.Length; ++i)
+        {
+            GlobalData.s_selectedCharacters[i] = m_selectors[i].m_selectedPlayer.m_data;
+        }
+        LeanTween.move(Camera.main.gameObject, m_cameraStart.position, 1.0f).setEase(LeanTweenType.easeInOutSine).setOnComplete(LoadGameScene);
+    }
+
+    protected void LoadGameScene()
+    {
         SceneManager.LoadScene(m_gameSceneName);
     }
 }

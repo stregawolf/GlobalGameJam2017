@@ -90,7 +90,8 @@ public class CharacterControls : MonoBehaviour {
             leftDir = rightDir = dir;
         }
 
-        m_forcePoint.AddForce(dir * m_force);
+        if(m_forcePoint)
+            m_forcePoint.AddForce(dir * m_force);
         if (m_leftArm != null)
             m_leftArm.AddForce(leftDir * m_armForce);
         if (m_rightArm != null)

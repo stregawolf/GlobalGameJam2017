@@ -12,6 +12,11 @@ public class VolleyBallUIManager : BaseUIManager {
         EventManager.DisplayCenterText.Register(DisplayCenterText);
     }
 
+    public void Start()
+    {
+        FadeIn().setOnComplete(Game.Instance.StartGame);
+    }
+
     public void OnDestroy()
     {
         EventManager.StartCountDown.Unregister(StartCountDown);

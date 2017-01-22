@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Player : BaseActor
 {
+    public int m_playerIndex = 0;
+    public bool m_pullDataFromSelection = false;
+
     public Game.Team m_team;
     public CharacterData m_data;
 
@@ -34,6 +37,11 @@ public class Player : BaseActor
         if(m_builder == null)
         {
             m_builder = GetComponent<PlayerBuilder>();
+        }
+        
+        if(m_pullDataFromSelection && GlobalData.s_selectedCharacters[m_playerIndex] != null)
+        {
+            m_data = GlobalData.s_selectedCharacters[m_playerIndex];
         }
     }
 

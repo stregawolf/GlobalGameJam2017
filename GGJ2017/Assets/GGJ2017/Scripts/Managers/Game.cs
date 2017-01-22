@@ -51,15 +51,14 @@ public class Game : MonoBehaviour
         m_gameStarted = false;
         m_roundStarted = false;
         m_gameCompleted = false;
-
-
+        
         SceneManager.LoadScene(m_uiSceneName, LoadSceneMode.Additive);
     }
 
     protected void Start()
     {
         m_ball.Reset();
-        StartGame();
+        InitPlayers();
     }
 
     protected void OnDestroy()
@@ -67,23 +66,6 @@ public class Game : MonoBehaviour
         Instance = null;
         EventManager.OnBallHitGround.Unregister(OnBallHitGround);
     }
-
-    
-    protected void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if(!m_gameStarted)
-            {
-                StartGame();
-            }
-            else if(m_gameCompleted)
-            {
-                RestartGame();
-            }
-        }
-    }
-    
     
     public void RestartGame()
     {
@@ -106,7 +88,6 @@ public class Game : MonoBehaviour
     public void StartGame()
     {
         m_gameStarted = true;
-        InitPlayers();
         StartRound();
     }
 

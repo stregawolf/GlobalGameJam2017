@@ -1,8 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BaseUIManager : MonoBehaviour {
+    public RectTransform m_fader;
+
+    public LTDescr FadeOut(float duration = 1.0f)
+    {
+        return LeanTween.color(m_fader, Color.white, duration).setEase(LeanTweenType.easeInOutSine);
+    }
+
+    public LTDescr FadeIn(float duration = 1.0f)
+    {
+        return LeanTween.color(m_fader, Color.clear, duration).setEase(LeanTweenType.easeInOutSine);
+    }
 
     public LTDescr DoTransitionTo(RectTransform rect, Vector3 pos, float transitionTime, float delay = 0.0f, LeanTweenType ease = LeanTweenType.easeInOutSine, bool doCancel = false)
     {
@@ -12,7 +24,6 @@ public class BaseUIManager : MonoBehaviour {
         }
         return LeanTween.move(rect, pos, transitionTime).setDelay(delay).setEase(ease);
     }
-
 
     public LTDescr DoTransitionTo(GameObject obj, Vector3 pos, float transitionTime, float delay = 0.0f, LeanTweenType ease = LeanTweenType.easeInOutSine, bool doCancel = false)
     {
