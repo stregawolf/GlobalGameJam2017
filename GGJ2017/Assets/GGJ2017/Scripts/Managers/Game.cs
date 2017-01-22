@@ -269,6 +269,7 @@ public class Game : MonoBehaviour
         EndRound();
         StartCoroutine(HandleCameraFlash(0.12f));
         StartCoroutine(HandleCameraShake(0.75f,1.0f));
+        StartCoroutine(HandleCameraWrap(0.2f, -60.0f));
 
         StartCoroutine(HandleScoringFeedback(delay));
     }
@@ -293,6 +294,22 @@ public class Game : MonoBehaviour
         screenOverlay.enabled = true;
         yield return new WaitForSeconds(duration);
         screenOverlay.enabled = false;
+    }
+
+    public void WrapCamera(float intensity)
+    {
+        var lensAberration = Camera.main.GetComponent<UnityStandardAssets.CinematicEffects.LensAberrations>();
+
+        lensAberration.distortion.amount = intensity;
+    }
+
+    public IEnumerator HandleCameraWrap(float duration, float intensity)
+    {
+        var lensAberration = Camera.main.GetComponent<UnityStandardAssets.CinematicEffects.LensAberrations>();
+        lensAberration.enabled = true;        
+        LeanTween.value(lensAberration.gameObject,WrapCamera,0.0f,intensity,duration).setLoopCount(2).setLoopPingPong();
+        yield return new WaitForSeconds(duration*2);
+        lensAberration.enabled = false;
     }
 
     //this works because we don't move the camera, probably has to be rethought otherwise
