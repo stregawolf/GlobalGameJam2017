@@ -157,7 +157,6 @@ public class Ball : BaseObject
 			case "Net":
 			case "Umbrella":
 				clip = boings[Random.Range(0, boings.Length)];
-				m_rigidbody.AddForce(m_rigidbody.velocity.normalized * 10.0f);
 				velGate = 5.0f;
 				break;
 			default:
