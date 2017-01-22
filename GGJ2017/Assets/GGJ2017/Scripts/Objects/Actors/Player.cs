@@ -98,6 +98,9 @@ public class Player : BaseActor
         }
 
         LeanTween.cancel(gameObject);
-        LeanTween.delayedCall(gameObject, duration, ShowDefaultExpression);
+        if (duration > 0.0f)
+        {
+            LeanTween.delayedCall(gameObject, duration, ShowDefaultExpression);
+        }
     }
 }

@@ -187,6 +187,7 @@ public class TitleUIManager : BaseUIManager {
         m_selectionCount[playerIndex]--;
         if (m_selectionCount[playerIndex] <= 0)
         {
+            m_selectableCharacters[playerIndex].ShowDefaultExpression();
             m_selectableCharacters[playerIndex].m_controls.m_passiveForceHead = 0.0f;
             m_selectableCharacters[playerIndex].m_controls.m_passiveForceArm = 0.0f;
         }
@@ -197,6 +198,7 @@ public class TitleUIManager : BaseUIManager {
         m_selectionCount[playerIndex]++;
         if (m_selectionCount[playerIndex] > 0)
         {
+            m_selectableCharacters[playerIndex].ShowExpression(Player.Expression.Excited, 0.0f);
             m_selectableCharacters[playerIndex].m_controls.m_passiveForceHead = 200.0f;
             m_selectableCharacters[playerIndex].m_controls.m_passiveForceArm = 20.0f;
         }
