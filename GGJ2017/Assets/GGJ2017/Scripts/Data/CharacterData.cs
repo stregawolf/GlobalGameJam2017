@@ -18,4 +18,11 @@ public class CharacterData : ScriptableObject {
     public Sprite m_faceExcited;
     public Sprite m_faceSad;
 	public Sprite m_faceShocked;
+
+	public AudioClip m_angryClip;
+	public AudioClip m_excitedClip;
+	public AudioClip m_sadClip;
+	public AudioClip m_shockedClip;
+	public AudioClip m_WinClip;
+	public AudioClip m_LoseClip;
 }
