@@ -31,10 +31,15 @@ public class Ball : BaseObject
     public Player m_lastPlayer { get; protected set; }
 
     private TrailRenderer m_trailRenderer;
+	private AudioSource audio;
+
+	public AudioClip[] hits;
+	public AudioClip[] boings;
 
     protected override void Awake()
     {
         base.Awake();
+		audio = gameObject.AddComponent<AudioSource>();
         m_originalPosition = transform.position;
         m_originalRotation = transform.rotation;
         m_trailRenderer = GetComponent<TrailRenderer>();
@@ -145,7 +150,24 @@ public class Ball : BaseObject
 
     public void OnCollisionExit(Collision c)
     {
-        
+		AudioClip clip = null;
+		float velGate = 0.0f;
+
+		switch (c.gameObject.tag) {
+			case "Net":
+			case "Umbrella":
+				clip = boings[Random.Range(0, boings.Length)];
+				m_rigidbody.AddForce(m_rigidbody.velocity.normalized * 10.0f);
+				velGate = 5.0f;
+				break;
+			default:
+				clip = hits[Random.Range(0, hits.Length)];
+				velGate = 10.0f;
+				break;
+		}
+
+		if (clip != null && m_rigidbody.velocity.sqrMagnitude > (velGate * velGate))
+			audio.PlayOneShot(clip);
     }
 
 }

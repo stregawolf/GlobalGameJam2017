@@ -21,6 +21,7 @@ public class Net : MonoBehaviour {
 
 			Rigidbody rbody = joint.GetComponent<Rigidbody>();
 			rbody.freezeRotation = true;
+			joint.gameObject.tag = gameObject.tag;
 		}
 	}
 }

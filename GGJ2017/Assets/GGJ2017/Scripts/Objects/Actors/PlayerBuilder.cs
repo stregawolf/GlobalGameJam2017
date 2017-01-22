@@ -65,7 +65,7 @@ public class PlayerBuilder : MonoBehaviour {
             {
                 currentSegment = Instantiate(bodySegment);
             }
-
+			currentSegment.tag = "Player";
 			currentSegment.name = "Body Segment(" + i + ")";
 			currentSegment.transform.parent = bodyChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
@@ -108,6 +108,7 @@ public class PlayerBuilder : MonoBehaviour {
 		rightArmChain.transform.localScale = Vector3.one;
 		for (int i = armSegments - 1; i >= 0; i--) {
 			GameObject currentSegment = Instantiate(armSegment);
+			currentSegment.tag = "Player";
 			currentSegment.name = "Arm Segment(" + i + ")";
 			currentSegment.transform.parent = rightArmChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
@@ -149,6 +150,7 @@ public class PlayerBuilder : MonoBehaviour {
 		leftArmChain.transform.localScale = Vector3.one;
 		for (int i = armSegments - 1; i >= 0; i--) {
 			GameObject currentSegment = Instantiate(armSegment);
+			currentSegment.tag = "Player";
 			currentSegment.name = "Arm Segment(" + i + ")";
 			currentSegment.transform.parent = leftArmChain.transform;
 			currentSegment.transform.localRotation = Quaternion.identity;
