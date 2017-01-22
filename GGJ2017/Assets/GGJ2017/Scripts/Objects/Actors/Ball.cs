@@ -7,10 +7,16 @@ public class Ball : BaseObject
 
     public float m_initialImpulse = 10.0f;
     public float m_contactImpulse = 1.0f;
-    public float ballScale = 1f;
-	public bool changeColors = false;
+    public float m_ballScale = 1f;
+	public bool m_changeColors = false;
+
+	public float m_windX = 0;
+	public float m_windY = 0;
+	public float m_windStrength = 0;
 
     public GameObject m_ground;
+
+	public bool drawWindArea = false;
 
     public Rigidbody m_rigidbody;
 
@@ -50,12 +56,12 @@ public class Ball : BaseObject
     public void Show()
     {
         transform.localScale = Vector3.zero;
-        LeanTween.scale(gameObject, Vector3.one * ballScale, 0.5f).setEase(LeanTweenType.easeSpring);
+        LeanTween.scale(gameObject, Vector3.one * m_ballScale, 0.5f).setEase(LeanTweenType.easeSpring);
     }
 
     public void Hide(float delay = 0.0f)
     {
-        transform.localScale = Vector3.one * ballScale;
+        transform.localScale = Vector3.one * m_ballScale;
         LeanTween.scale(gameObject, Vector3.zero, 1.0f).setDelay(delay).setEase(LeanTweenType.easeSpring);
     }
 
@@ -71,12 +77,42 @@ public class Ball : BaseObject
         {
             m_lastPlayer = player;
             m_pointTeamId = Game.TeamId.Invalid;
-			if(changeColors)
+			if(m_changeColors)
 	            SetColor(m_lastPlayer.m_team.m_color);
 
             m_rigidbody.AddForce(Vector3.up * m_contactImpulse, ForceMode.Impulse);
         }
     }
+
+	void Update()
+	{
+		bool inWindArea = false;
+		if (m_windStrength > 0f) {
+			if (Mathf.Abs(transform.position.x) + 0.5f * m_ballScale > m_windX) {
+				m_rigidbody.AddForce(m_windStrength * Vector3.right * -Mathf.Sign(transform.position.x));
+				inWindArea = true;
+			}
+			if (transform.position.y + 0.5f * m_ballScale > m_windY) {
+				m_rigidbody.AddForce(m_windStrength * -Vector3.up);
+				inWindArea = true;
+			}
+		}
+
+		if (drawWindArea) {
+			Vector3 bl = new Vector3(-m_windX, 0, 0);
+			Vector3 tl = new Vector3(-m_windX, m_windY, 0);
+			Vector3 tr = new Vector3(m_windX, m_windY, 0);
+			Vector3 br = new Vector3(m_windX, 0, 0);
+
+			Color color = inWindArea ? Color.red : Color.green;
+
+
+			Debug.DrawLine(bl, tl, color);
+			Debug.DrawLine(tl, tr, color);
+			Debug.DrawLine(tr, br, color);
+			Debug.DrawLine(br, bl, color);
+		}
+	}
 
     public void OnCollisionEnter(Collision c)
     {
