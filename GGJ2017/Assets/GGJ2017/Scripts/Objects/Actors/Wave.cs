@@ -117,7 +117,7 @@ public class Wave : MonoBehaviour
             var point = m_collider.ClosestPointOnBounds(otherCollider.transform.position);
             var grid = WorldToGridCoordinates(point);
 
-            velocityBuffer[grid.x, grid.y] = waveStrength;
+            velocityBuffer[grid.x, grid.y] = waveStrength * rigidBody.velocity.magnitude;
         }
     }
 
