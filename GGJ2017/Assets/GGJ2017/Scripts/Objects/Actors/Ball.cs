@@ -113,6 +113,9 @@ public class Ball : BaseObject
 				m_rigidbody.velocity = new Vector3(-m_rigidbody.velocity.x, m_rigidbody.velocity.y, 0);
 			}
 
+			if (transform.position.y > 20.0f && m_rigidbody.velocity.y > 0) {
+				m_rigidbody.AddForce(-Vector3.up);
+			}
 		}
 
 		if (drawWindArea) {
