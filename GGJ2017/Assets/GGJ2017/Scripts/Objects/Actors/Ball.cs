@@ -5,6 +5,7 @@ using UnityEngine;
 public class Ball : BaseObject
 {
 
+
     public float m_initialImpulse = 10.0f;
     public float m_contactImpulse = 1.0f;
     public float m_ballScale = 1f;
