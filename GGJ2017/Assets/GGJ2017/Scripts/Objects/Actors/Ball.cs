@@ -71,7 +71,8 @@ public class Ball : BaseObject
         {
             m_lastPlayer = player;
             m_pointTeamId = Game.TeamId.Invalid;
-            SetColor(m_lastPlayer.m_team.m_color);
+			if(changeColors)
+	            SetColor(m_lastPlayer.m_team.m_color);
 
             m_rigidbody.AddForce(Vector3.up * m_contactImpulse, ForceMode.Impulse);
         }
