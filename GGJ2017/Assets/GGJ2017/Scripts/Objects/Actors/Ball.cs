@@ -91,6 +91,7 @@ public class Ball : BaseObject
 
 	void FixedUpdate()
 	{
+		m_trailRenderer.startWidth = transform.localScale.x;
 		bool inWindArea = false;
 		if (m_windStrength > 0f) {
 			if (Mathf.Abs(transform.position.x) + 0.5f * m_ballScale > m_windX) {
