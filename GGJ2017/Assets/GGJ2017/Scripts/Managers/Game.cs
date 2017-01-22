@@ -198,13 +198,15 @@ public class Game : MonoBehaviour
     }
 
     public void ShowTeamExpression(Player.Expression winExpression, Player.Expression loseExpression, Team winningTeam, float duration = 2.0f)
-    {
+	{
         for (int i = 0; i < m_teams.Length; ++i)
         {
             Team team = m_teams[i];
             for (int p = 0; p < team.m_players.Length; ++p)
-            {
-                team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression, duration);
+			{
+				
+				team.m_players[p].MaybePlaySound((team == winningTeam) ? team.m_players[p].m_data.m_WinClips : team.m_players[p].m_data.m_LoseClips);
+				team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression, duration);
             }
         }
     }

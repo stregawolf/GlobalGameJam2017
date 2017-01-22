@@ -8,11 +8,13 @@ public class BaseUIManager : MonoBehaviour {
 
     public LTDescr FadeOut(float duration = 1.0f)
     {
+        m_fader.gameObject.SetActive(true);
         return LeanTween.color(m_fader, Color.white, duration).setEase(LeanTweenType.easeInOutSine);
     }
 
     public LTDescr FadeIn(float duration = 1.0f)
     {
+        m_fader.gameObject.SetActive(true);
         return LeanTween.color(m_fader, Color.clear, duration).setEase(LeanTweenType.easeInOutSine);
     }
 
