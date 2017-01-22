@@ -88,6 +88,19 @@ public class Game : MonoBehaviour
     public void StartGame()
     {
         m_gameStarted = true;
+        m_gameCompleted = false;
+
+        for (int i = 0; i < m_teams.Length; ++i)
+        {
+            Team team = m_teams[i];
+            for (int p = 0; p < team.m_players.Length; ++p)
+            {
+                team.m_players[p].ShowDefaultExpression();
+            }
+        }
+
+        ResetScore(true);
+        EventManager.OnScoreChange.Dispatch();
         StartRound();
     }
 
@@ -130,20 +143,24 @@ public class Game : MonoBehaviour
     }
     
 
-    public void ResetScore()
+    public void ResetScore(bool resetMatchPoints = false)
     {
         for (int i = 0; i < m_teams.Length; ++i)
         {
             m_teams[i].m_score = 0;
+            if(resetMatchPoints)
+            {
+                m_teams[i].m_matchPoints = 0;
+            }
         }
     }
 
-    public void IncreaseScore(TeamId id)
+    public float IncreaseScore(TeamId id)
     {
         int teamIndex = (int)id;
         if (teamIndex < 0 || teamIndex > m_teams.Length)
         {
-            return;
+            return 0.0f;
         }
         Team team = m_teams[teamIndex];
 
@@ -155,16 +172,20 @@ public class Game : MonoBehaviour
             team.m_matchPoints++;
             if (team.m_matchPoints >= m_matchesToWinGame)
             {
-                m_gameCompleted = true;
                 // display "team wins the game!"
-                ShowTeamExpression(Player.Expression.Excited, Player.Expression.Angry, team);
-                EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the game!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
+                ShowTeamExpression(Player.Expression.Excited, Player.Expression.Angry, team, 0.0f);
+                EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins!", team.m_displayName), 0.0f, 0.25f, Vector3.one * 1.25f);
+                
+                m_gameCompleted = true;
+                EventManager.OnGameComplete.Dispatch();
+                return -1;
             }
             else
             {
                 // display "team wins the match!"
-                ShowTeamExpression(Player.Expression.Excited, Player.Expression.Angry, team);
-                EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the match!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
+                ShowTeamExpression(Player.Expression.Excited, Player.Expression.Angry, team, 3.0f);
+                EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the round!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
+                return 3.0f;
             }
         }
         else
@@ -172,17 +193,18 @@ public class Game : MonoBehaviour
             // display "team scores!"
             ShowTeamExpression(Player.Expression.Excited, (Random.value > 0.5)?Player.Expression.Shocked:Player.Expression.Sad, team);
             EventManager.DisplayCenterText.Dispatch(string.Format("{0} scores!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
+            return 1.0f;
         }
     }
 
-    public void ShowTeamExpression(Player.Expression winExpression, Player.Expression loseExpression, Team winningTeam)
+    public void ShowTeamExpression(Player.Expression winExpression, Player.Expression loseExpression, Team winningTeam, float duration = 2.0f)
     {
         for (int i = 0; i < m_teams.Length; ++i)
         {
             Team team = m_teams[i];
             for (int p = 0; p < team.m_players.Length; ++p)
             {
-                team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression);
+                team.m_players[p].ShowExpression((team == winningTeam)?winExpression:loseExpression, duration);
             }
         }
     }
@@ -194,6 +216,8 @@ public class Game : MonoBehaviour
             return;
         }
 
+        float delay = 0.0f;
+
         if (m_ball.m_lastPlayer != null)
         {
             // determine winner
@@ -202,19 +226,19 @@ public class Game : MonoBehaviour
                 if (m_ball.m_lastPlayer.m_team.m_id == TeamId.TeamA)
                 {
                     // ball landed on A's side and last touched by A
-                    IncreaseScore(TeamId.TeamB);
+                    delay = IncreaseScore(TeamId.TeamB);
                 }
                 else if (m_ball.m_lastPlayer.m_team.m_id == TeamId.TeamB)
                 {
                     if (m_ball.m_pointTeamId == TeamId.TeamB)
                     {
                         // team B hit ball over net
-                        IncreaseScore(TeamId.TeamB);
+                        delay = IncreaseScore(TeamId.TeamB);
                     }
                     else
                     {
                         // team B hit ball, but not over the net
-                        IncreaseScore(TeamId.TeamA);
+                        delay = IncreaseScore(TeamId.TeamA);
                     }
                 }
             }
@@ -223,19 +247,19 @@ public class Game : MonoBehaviour
                 if (m_ball.m_lastPlayer.m_team.m_id == TeamId.TeamB)
                 {
                     // ball landed on B's side and last touched by B
-                    IncreaseScore(TeamId.TeamA);
+                    delay = IncreaseScore(TeamId.TeamA);
                 }
                 else if (m_ball.m_lastPlayer.m_team.m_id == TeamId.TeamA)
                 {
                     if (m_ball.m_pointTeamId == TeamId.TeamA)
                     {
                         // team B hit ball over net
-                        IncreaseScore(TeamId.TeamA);
+                        delay = IncreaseScore(TeamId.TeamA);
                     }
                     else
                     {
                         // team B hit ball, but not over the net
-                        IncreaseScore(TeamId.TeamB);
+                        delay = IncreaseScore(TeamId.TeamB);
                     }
                 }
             }
@@ -245,7 +269,8 @@ public class Game : MonoBehaviour
         m_roundStarted = false;
         StartCoroutine(HandleCameraFlash(0.12f));
         StartCoroutine(HandleCameraShake(0.75f,1.0f));
-        StartCoroutine(HandleScoringFeedback());
+
+        StartCoroutine(HandleScoringFeedback(delay));
     }
 
     public void SetEnvironmentColor(Color c)
@@ -301,19 +326,23 @@ public class Game : MonoBehaviour
         Time.timeScale = 1.0f;
     }
 
-    protected IEnumerator HandleScoringFeedback()
+    protected IEnumerator HandleScoringFeedback(float roundStartDelay = 0.0f)
     {
         m_ball.SetColor(m_lastScoringTeam.m_color);
         SetEnvironmentColor(m_lastScoringTeam.m_color);
 
         yield return StartCoroutine(HandleTimeFlux(1.0f));
 
-        if(!m_gameCompleted)
+        if(roundStartDelay >= 0.0f)
         {
-            m_ball.Hide();
-            yield return new WaitForSecondsRealtime(1.0f);
+            yield return new WaitForSeconds(roundStartDelay);
+            if (!m_gameCompleted)
+            {
+                m_ball.Hide();
+                yield return new WaitForSecondsRealtime(1.0f);
 
-            StartRound();
+                StartRound();
+            }
         }
     }
 
