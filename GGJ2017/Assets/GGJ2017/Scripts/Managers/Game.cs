@@ -23,6 +23,7 @@ public class Game : MonoBehaviour
     public class Team
     {
         public TeamId m_id = TeamId.Invalid;
+        public string m_displayName = string.Empty;
         public int m_score = 0;
         public int m_matchPoints = 0;
         public Color m_color = Color.white;
@@ -33,6 +34,7 @@ public class Game : MonoBehaviour
     public Team[] m_teams;
     public BaseObject[] m_environmentPieces;
 
+    public bool m_gameCompleted { get; protected set; }
     public bool m_roundStarted { get; protected set; }
 
     protected Color m_environmentColor = Color.white;
@@ -44,6 +46,7 @@ public class Game : MonoBehaviour
         EventManager.OnBallHitGround.Register(OnBallHitGround);
 
         m_roundStarted = false;
+        m_gameCompleted = false;
 
         SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
     }
@@ -53,6 +56,23 @@ public class Game : MonoBehaviour
         Instance = null;
         EventManager.OnBallHitGround.Unregister(OnBallHitGround);
     }
+
+    protected void Update()
+    {
+        if(m_gameCompleted)
+        {
+            if(Input.anyKeyDown)
+            {
+                RestartGame();
+            }
+        }
+    }
+    
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
+    }
+
 
     public void InitPlayers()
     {
@@ -80,6 +100,8 @@ public class Game : MonoBehaviour
 
     protected IEnumerator HandleStartRound()
     {
+        EventManager.StartCountDown.Dispatch(3, 3.9f);
+
         m_ball.Reset();
 
         if(m_environmentColor != Color.white)
@@ -97,7 +119,7 @@ public class Game : MonoBehaviour
                 .setEase(LeanTweenType.easeInOutSine);
         }
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(4.0f);
 
         m_roundStarted = true;
         Vector3 dir = m_ball.transform.right;
@@ -134,8 +156,20 @@ public class Game : MonoBehaviour
             team.m_matchPoints++;
             if (team.m_matchPoints > m_matchesToWinGame)
             {
-                // Team wins
+                m_gameCompleted = true;
+                // display "team wins the game!"
+                EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the game!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
             }
+            else
+            {
+                // display "team wins the match!"
+                EventManager.DisplayCenterText.Dispatch(string.Format("{0} wins the match!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
+            }
+        }
+        else
+        {
+            // display "team scores!"
+            EventManager.DisplayCenterText.Dispatch(string.Format("{0} scores!", team.m_displayName), 1.0f, 0.25f, Vector3.one * 1.25f);
         }
     }
 
@@ -228,10 +262,14 @@ public class Game : MonoBehaviour
         SetEnvironmentColor(m_lastScoringTeam.m_color);
 
         yield return StartCoroutine(HandleTimeFlux(1.0f));
-        m_ball.Hide();
-        yield return new WaitForSecondsRealtime(1.0f);
-        
-        StartRound();
+
+        if(!m_gameCompleted)
+        {
+            m_ball.Hide();
+            yield return new WaitForSecondsRealtime(1.0f);
+
+            StartRound();
+        }
     }
 
 }
