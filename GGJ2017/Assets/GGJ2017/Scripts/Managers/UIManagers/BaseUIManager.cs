@@ -4,11 +4,24 @@ using UnityEngine;
 
 public class BaseUIManager : MonoBehaviour {
 
-    public LTDescr DoTransitionTo(RectTransform obj, Vector3 pos, float transitionTime, float delay = 0.0f, LeanTweenType ease = LeanTweenType.easeInOutSine)
+    public LTDescr DoTransitionTo(RectTransform rect, Vector3 pos, float transitionTime, float delay = 0.0f, LeanTweenType ease = LeanTweenType.easeInOutSine, bool doCancel = false)
     {
-        return LeanTween.move(obj, pos, transitionTime).setDelay(delay).setEase(ease);
+        if(doCancel)
+        {
+            LeanTween.cancel(rect);
+        }
+        return LeanTween.move(rect, pos, transitionTime).setDelay(delay).setEase(ease);
     }
 
+
+    public LTDescr DoTransitionTo(GameObject obj, Vector3 pos, float transitionTime, float delay = 0.0f, LeanTweenType ease = LeanTweenType.easeInOutSine, bool doCancel = false)
+    {
+        if (doCancel)
+        {
+            LeanTween.cancel(obj);
+        }
+        return LeanTween.move(obj, pos, transitionTime).setDelay(delay).setEase(ease);
+    }
     public LTDescr DoSpinTransitionIn(GameObject obj, float displayTime, float transitionTime, Vector3 toScale, float spinMultiplier = 2, bool autoHide = true)
     {
         LeanTween.cancel(obj);

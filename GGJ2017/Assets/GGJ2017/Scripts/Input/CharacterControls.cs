@@ -4,6 +4,8 @@ using UnityEngine;
 using XboxCtrlrInput;
 
 public class CharacterControls : MonoBehaviour {
+    public bool m_playerControlsEnabled = true;
+    public bool m_passiveForcesEnabled = true;
 
     public XboxController controller;
 
@@ -25,11 +27,31 @@ public class CharacterControls : MonoBehaviour {
     
     protected void FixedUpdate()
     {
-        m_head.AddForce(Vector3.up * m_passiveForceHead);
-		if(m_leftArm != null)
-	        m_leftArm.AddForce((Vector3.left + Vector3.up).normalized * m_passiveForceArm);
-		if(m_rightArm != null)
-	        m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
+        UpdatePassiveForces();
+        UpdatePlayerControls();
+    }
+
+    protected void UpdatePassiveForces()
+    {
+        if (!m_passiveForcesEnabled)
+        {
+            return;
+        }
+
+        if(m_head != null)
+            m_head.AddForce(Vector3.up * m_passiveForceHead);
+        if (m_leftArm != null)
+            m_leftArm.AddForce((Vector3.left + Vector3.up).normalized * m_passiveForceArm);
+        if (m_rightArm != null)
+            m_rightArm.AddForce((Vector3.right + Vector3.up).normalized * m_passiveForceArm);
+    }
+
+    protected void UpdatePlayerControls()
+    {
+        if(!m_playerControlsEnabled)
+        {
+            return;
+        }
 
         Vector3 dir = Vector3.zero;
         Vector3 leftDir = Vector3.zero;
@@ -69,9 +91,10 @@ public class CharacterControls : MonoBehaviour {
         }
 
         m_forcePoint.AddForce(dir * m_force);
-		if(m_leftArm != null)
-	        m_leftArm.AddForce(leftDir * m_armForce);
-		if(m_rightArm != null)
-	        m_rightArm.AddForce(rightDir * m_armForce);
+        if (m_leftArm != null)
+            m_leftArm.AddForce(leftDir * m_armForce);
+        if (m_rightArm != null)
+            m_rightArm.AddForce(rightDir * m_armForce);
+
     }
 }

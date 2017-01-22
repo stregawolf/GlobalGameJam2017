@@ -9,6 +9,7 @@ public class Player : BaseActor
 
     public Head m_head;
 
+    public CharacterControls m_controls;
     public PlayerBuilder m_builder;
 
     public enum Expression
@@ -24,17 +25,26 @@ public class Player : BaseActor
     protected override void Awake()
     {
         base.Awake();
+
+        if(m_controls == null)
+        {
+            m_controls = GetComponent<CharacterControls>();
+        }
+
         if(m_builder == null)
         {
             m_builder = GetComponent<PlayerBuilder>();
         }
     }
 
-    public void Init(Game.Team team)
+    public void Init(Game.Team team = null)
     {
-        m_team = team;
-        m_team.m_displayName = m_data.m_displayName;
-        m_team.m_color = m_data.m_color;
+        if(team != null)
+        {
+            m_team = team;
+            m_team.m_displayName = m_data.m_displayName;
+            m_team.m_color = m_data.m_color;
+        }
 
         m_builder.InitFromData(m_data);
         m_builder.BuildPlayer();

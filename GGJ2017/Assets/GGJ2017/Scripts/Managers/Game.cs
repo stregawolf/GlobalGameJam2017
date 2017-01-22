@@ -105,6 +105,7 @@ public class Game : MonoBehaviour
 
     public void StartGame()
     {
+        m_gameStarted = true;
         InitPlayers();
         StartRound();
     }
