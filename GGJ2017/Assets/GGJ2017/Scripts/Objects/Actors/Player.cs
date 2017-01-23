@@ -15,6 +15,8 @@ public class Player : BaseActor
     public CharacterControls m_controls;
     public PlayerBuilder m_builder;
 
+    bool inGame = false;
+
 	private AudioSource audio;
 
     public enum Expression
@@ -31,7 +33,7 @@ public class Player : BaseActor
     protected override void Awake()
     {
         base.Awake();
-
+        inGame = GameObject.Find("Net") != null;
 		audio = gameObject.AddComponent<AudioSource>();
 
         if(m_controls == null)
@@ -112,10 +114,12 @@ public class Player : BaseActor
         }
     }
 
-	public void MaybePlaySound(AudioClip[] clips)
+	public void MaybePlaySound(AudioClip[] clips, float chance = 0.5f)
 	{
-		if (Random.value > 0.5f && !audio.isPlaying) {
-			if (clips.Length != 0) {
+        if (!inGame)
+            chance = 0.0f;
+		if (Random.value >= chance) {
+			if (clips.Length != 0 && !audio.isPlaying) {
 				AudioClip clip = clips[Random.Range(0, clips.Length)];
 				audio.PlayOneShot(clip);
 			}
