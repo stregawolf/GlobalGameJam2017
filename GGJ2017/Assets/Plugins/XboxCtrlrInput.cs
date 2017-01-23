@@ -1,16 +1,19 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if !UNITY_WEBGL
 using XInputDotNetPure;
+#endif
 
 namespace XboxCtrlrInput
 {
-	
-	// ================= Enumerations ==================== //
-	
-	/// <summary>
-	///     List of enumerated identifiers for Xbox controllers.
-	/// </summary>
-	public enum XboxController
+#if UNITY_WEBGL
+#else
+    // ================= Enumerations ==================== //
+
+    /// <summary>
+    ///     List of enumerated identifiers for Xbox controllers.
+    /// </summary>
+    public enum XboxController
 	{
 		All = 0,
 		First = 1,
@@ -1834,4 +1837,5 @@ namespace XboxCtrlrInput
 			return default(XboxDPad);
 		}
 	}
+#endif
 }

@@ -30,6 +30,7 @@ public class VolleyBallUIManager : BaseUIManager {
 
     public void Update()
     {
+#if !UNITY_WEBGL
         if (Game.Instance.m_gameCompleted)
         {
             if (XCI.GetNumPluggedCtrlrs() > 0)
@@ -64,8 +65,12 @@ public class VolleyBallUIManager : BaseUIManager {
                 }
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.Escape) || (XCI.GetNumPluggedCtrlrs() > 0 && XCI.GetButtonDown(XboxButton.Start, XboxController.All)))
+#endif
+        bool resume = Input.GetKeyDown(KeyCode.Escape);
+#if !UNITY_WEBGL
+        resume = resume || (XCI.GetNumPluggedCtrlrs() > 0 && XCI.GetButtonDown(XboxButton.Start, XboxController.All));
+#endif
+        if (resume)
         {
             if (m_pauseMenu.activeSelf)
             {

@@ -112,8 +112,11 @@ public class TitleUIManager : BaseUIManager {
                 }
                 break;
         }
-
-        if(Input.GetKeyDown(KeyCode.Escape) || XCI.GetButtonDown(XboxButton.Back, XboxController.All))
+        bool quit = Input.GetKeyDown(KeyCode.Escape);
+#if !UNITY_WEBGL
+        quit = quit || XCI.GetButtonDown(XboxButton.Back, XboxController.All);
+#endif
+        if (quit)
         {
             Application.Quit();
         }

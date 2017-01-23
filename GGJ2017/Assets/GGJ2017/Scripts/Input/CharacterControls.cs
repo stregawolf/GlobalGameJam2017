@@ -7,7 +7,9 @@ public class CharacterControls : MonoBehaviour {
     public bool m_playerControlsEnabled = true;
     public bool m_passiveForcesEnabled = true;
 
+#if !UNITY_WEBGL
     public XboxController controller;
+#endif
 
     public Rigidbody m_head;
     public Rigidbody m_leftArm;
@@ -56,6 +58,7 @@ public class CharacterControls : MonoBehaviour {
         Vector3 dir = Vector3.zero;
         Vector3 leftDir = Vector3.zero;
         Vector3 rightDir = Vector3.zero;
+#if !UNITY_WEBGL
         if (XCI.GetNumPluggedCtrlrs() > 0 && Input.GetJoystickNames().Length != 0 && XCI.IsPluggedIn((int)(controller == XboxController.All ? XboxController.First : controller)))
         {
             leftDir.x = XCI.GetAxis(XboxAxis.LeftStickX, controller);
@@ -68,6 +71,7 @@ public class CharacterControls : MonoBehaviour {
             dir = (leftDir + rightDir).normalized;
         }
         else // Fallback to KB
+#endif
         {
             if (Input.GetKey(m_upkey))
             {
