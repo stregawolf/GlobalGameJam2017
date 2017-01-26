@@ -1,3 +1,5 @@
-# GlobalGameJam2017
+# Wacky Wavy Inflatable Tube Men EXTREME
 
-* VR Wave shooter 2017
+* About
+* How to play
+* Credits
